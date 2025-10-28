@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Jedidja - Ton assistant IA personnel">
+    <meta name="theme-color" content="#343541">
+    <title>Jedidja - Assistant IA</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            /* Thème Clair (ChatGPT style) */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f8;
+            --bg-sidebar: #ffffff;
+            --text-primary: #353740;
+            --text-secondary: #6e6e80;
+            --border-color: #e5e5e5;
+            --user-msg-bg: #f7f7f8;
+            --assistant-msg-bg: #ffffff;
+            --accent-color: #10a37f;
+            --hover-bg: #f7f7f8;
+            --input-bg: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-theme="dark"] {
+            /* Thème Sombre (ChatGPT dark) */
+            --bg-primary: #343541;
+            --bg-secondary: #444654;
+            --bg-sidebar: #202123;
+            --text-primary: #ececf1;
+            --text-secondary: #c5c5d2;
+            --border-color: #565869;
+            --user-msg-bg: #343541;
+            --assistant-msg-bg: #444654;
+            --accent-color: #10a37f;
+            --hover-bg: #2a2b32;
+            --input-bg: #40414f;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-header {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .new-chat-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .new-chat-btn:hover {
+            background: var(--hover-bg);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .nav-item {
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: var(--hover-bg);
+        }
+        
+        .nav-item.active {
+            font-weight: 600;
+        }
+        
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .theme-toggle {
+            width: 100%;
+            padding: 12px 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+        
+        .chat-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-primary);
+        }
+        
+        .chat-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .header-btn {
+            padding: 8px 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .header-btn:hover {
+            background: var(--hover-bg);
+        }
+        
+        /* Chat Area */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .messages-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 24px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 16px;
+            padding: 24px 0;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            background: var(--user-msg-bg);
+        }
+        
+        .message.assistant {
+            background: var(--assistant-msg-bg);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .message-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .message.user .message-avatar {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .message.assistant .message-avatar {
+            background: var(--accent-color);
+        }
+        
+        .message-content {
+            flex: 1;
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        
+        /* Input Area */
+        .input-container {
+            padding: 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+        
+        .input-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .chat-input {
+            width: 100%;
+            padding: 14px 50px 14px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            resize: none;
+            min-height: 52px;
+            max-height: 200px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        .chat-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+        
+        .send-btn {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            width: 32px;
+            height: 32px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .send-btn:hover:not(:disabled) {
+            background: #0e8c6d;
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 24px 0;
+            background: var(--assistant-msg-bg);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .typing-indicator.active {
+            display: block;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 0 16px;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+        
+        /* Section Content */
+        .section-content {
+            display: none;
+            padding: 24px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .section-content.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .card-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            padding: 10px 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #0e8c6d;
+        }
+        
+        /* Info Banner */
+        .info-banner {
+            background: rgba(16, 163, 127, 0.1);
+            border: 1px solid rgba(16, 163, 127, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                height: 100%;
+                z-index: 1000;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .messages-wrapper {
+                padding: 16px;
+            }
+            
+            .message {
+                padding: 16px 0;
+            }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" onclick="newChat()">
+                    <span>➕</span>
+                    <span>Nouvelle conversation</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="nav-item active" onclick="showSection('chat')">
+                    <span>💬</span>
+                    <span>Chat</span>
+                </div>
+                <div class="nav-item" onclick="showSection('notes')">
+                    <span>📝</span>
+                    <span>Notes</span>
+                </div>
+                <div class="nav-item" onclick="showSection('reminders')">
+                    <span>⏰</span>
+                    <span>Rappels</span>
+                </div>
+                <div class="nav-item" onclick="showSection('stats')">
+                    <span>📊</span>
+                    <span>Statistiques</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span>
+                    <span id="theme-text">Mode sombre</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="chat-header">
+                <h1 id="section-title">
+                    <span>🤖</span>
+                    <span>Jedidja</span>
+                </h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="clearChat()">🗑️ Effacer</button>
+                    <button class="header-btn" onclick="toggleVoice()">🔊 Voix</button>
+                </div>
+            </div>
+            
+            <!-- Chat Section -->
+            <div id="chat-section" class="section-content active" style="display: flex; flex-direction: column; flex: 1; padding: 0;">
+                <div class="chat-container">
+                    <div class="messages-wrapper" id="messages">
+                        <div class="message assistant">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                Bonjour ! Je suis Jedidja, ton assistant IA personnel. Je suis prêt à t'aider avec tes questions, projets, ou simplement pour discuter ! Comment puis-je t'aider aujourd'hui ? 😊
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="typing-indicator" id="typing">
+                        <div class="messages-wrapper">
+                            <div class="message assistant">
+                                <div class="message-avatar">🤖</div>
+                                <div class="typing-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea 
+                            class="chat-input" 
+                            id="input" 
+                            placeholder="Envoie un message à Jedidja..." 
+                            rows="1"
+                            onkeydown="handleKeyDown(event)"
+                        ></textarea>
+                        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+                            ➤
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notes Section -->
+            <div id="notes-section" class="section-content">
+                <h2 class="section-title">📝 Mes Notes</h2>
+                <div class="card">
+                    <div class="card-header">Ajouter une note</div>
+                    <textarea class="input-field" id="note-input" rows="3" placeholder="Écris ta note ici..."></textarea>
+                    <button class="btn-primary" onclick="addNote()">Ajouter</button>
+                </div>
+                <div id="notes-list"></div>
+            </div>
+            
+            <!-- Reminders Section -->
+            <div id="reminders-section" class="section-content">
+                <h2 class="section-title">⏰ Mes Rappels</h2>
+                <div class="card">
+                    <div class="card-header">Créer un rappel</div>
+                    <input type="number" class="input-field" id="reminder-minutes" min="1" value="5" placeholder="Minutes">
+                    <input type="text" class="input-field" id="reminder-message" placeholder="Message du rappel">
+                    <button class="btn-primary" onclick="addReminder()">Créer</button>
+                </div>
+                <div id="reminders-list"></div>
+            </div>
+            
+            <!-- Stats Section -->
+            <div id="stats-section" class="section-content">
+                <h2 class="section-title">📊 Statistiques</h2>
+                <div class="info-banner">
+                    <strong>Utilisation de Jedidja</strong><br>
+                    Voici un résumé de ton activité avec l'assistant.
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 36px; margin-bottom: 8px;">💬</div>
+                        <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-messages">0</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">Messages envoyés</div>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 36px; margin-bottom: 8px;">📝</div>
+                        <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-notes">0</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">Notes créées</div>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 36px; margin-bottom: 8px;">⏰</div>
+                        <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-reminders">0</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">Rappels actifs</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Theme Management
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateThemeButton();
+        
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            updateThemeButton();
+        }
+        
+        function updateThemeButton() {
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            if (currentTheme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Mode clair';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Mode sombre';
+            }
+        }
+        
+        // Navigation
+        function showSection(section) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+            
+            event.target.closest('.nav-item').classList.add('active');
+            document.getElementById(section + '-section').classList.add('active');
+            
+            const titles = {
+                'chat': 'Jedidja',
+                'notes': 'Notes',
+                'reminders': 'Rappels',
+                'stats': 'Statistiques'
+            };
+            document.getElementById('section-title').innerHTML = `<span>🤖</span><span>${titles[section]}</span>`;
+            
+            if (section === 'notes') loadNotes();
+            if (section === 'reminders') loadReminders();
+            if (section === 'stats') loadStats();
+        }
+        
+        // Chat Logic
+        let conversation = [{role: "system", content: "Tu es Jedidja, un assistant IA amical en français. Tu es sympathique, drôle et serviable. Tu réponds de manière claire et structurée."}];
+        let voiceEnabled = false;
+        let stats = JSON.parse(localStorage.getItem('stats') || '{"messages": 0, "notes": 0, "reminders": 0}');
+        
+        function newChat() {
+            if (confirm('Commencer une nouvelle conversation ?')) {
+                clearChat();
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessageToUI('user', message);
+            input.value = '';
+            input.style.height = 'auto';
+            
+            conversation.push({role: 'user', content: message});
+            document.getElementById('send-btn').disabled = true;
+            document.getElementById('typing').classList.add('active');
+            
+            try {
+                const response = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message, conversation})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    conversation.push({role: 'assistant', content: data.response});
+                    addMessageToUI('assistant', data.response);
+                    if (voiceEnabled) speak(data.response);
+                    stats.messages++;
+                    localStorage.setItem('stats', JSON.stringify(stats));
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                addMessageToUI('assistant', '❌ Désolé, une erreur s\'est produite. Réessaie dans quelques instants.');
+            }
+            
+            document.getElementById('typing').classList.remove('active');
+            document.getElementById('send-btn').disabled = false;
+        }
+        
+        function addMessageToUI(type, content) {
+            const wrapper = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const avatar = type === 'user' ? '👤' : '🤖';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            wrapper.appendChild(messageDiv);
+            document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight;
+        }
+        
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        function clearChat() {
+            conversation = [conversation[0]];
+            document.getElementById('messages').innerHTML = `
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">Nouvelle conversation ! Comment puis-je t'aider ? 😊</div>
+                </div>
+            `;
+        }
+        
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            alert(voiceEnabled ? '🔊 Voix activée' : '🔇 Voix désactivée');
+        }
+        
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1F9FF}]/gu, ''));
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+        
+        // Notes
+        let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+        
+        function addNote() {
+            const input = document.getElementById('note-input');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            notes.push({id: Date.now(), text, timestamp: new Date().toLocaleString('fr-FR')});
+            localStorage.setItem('notes', JSON.stringify(notes));
+            stats.notes++;
+            localStorage.setItem('stats', JSON.stringify(stats));
+            input.value = '';
+            loadNotes();
+        }
+        
+        function loadNotes() {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = notes.length === 0 ? '<div class="card">Aucune note pour le moment</div>' : '';
+            notes.forEach(note => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="margin-bottom: 8px;">${note.text}</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">${note.timestamp}</div>
+                        </div>
+                        <button class="header-btn" style="margin: 0;" onclick="deleteReminder(${reminder.id})">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+        
+        function deleteReminder(id) {
+            reminders = reminders.filter(r => r.id !== id);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            stats.reminders--;
+            localStorage.setItem('stats', JSON.stringify(stats));
+            loadReminders();
+        }
+        
+        // Stats
+        function loadStats() {
+            document.getElementById('stat-messages').textContent = stats.messages;
+            document.getElementById('stat-notes').textContent = stats.notes;
+            document.getElementById('stat-reminders').textContent = stats.reminders;
+        }
+        
+        // Auto-resize textarea
+        document.getElementById('input').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+        
+        // Init
+        window.onload = function() {
+            document.getElementById('input').focus();
+            loadStats();
+        };
+    </script>
+</body>
+</html>="deleteNote(${note.id})">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+        
+        function deleteNote(id) {
+            if (confirm('Supprimer cette note ?')) {
+                notes = notes.filter(n => n.id !== id);
+                localStorage.setItem('notes', JSON.stringify(notes));
+                stats.notes--;
+                localStorage.setItem('stats', JSON.stringify(stats));
+                loadNotes();
+            }
+        }
+        
+        // Reminders
+        let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+        
+        function addReminder() {
+            const minutes = parseInt(document.getElementById('reminder-minutes').value);
+            const message = document.getElementById('reminder-message').value.trim();
+            if (!message || !minutes) return;
+            
+            const reminder = {
+                id: Date.now(),
+                message,
+                minutes,
+                time: new Date(Date.now() + minutes * 60000).toLocaleString('fr-FR')
+            };
+            
+            reminders.push(reminder);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            stats.reminders++;
+            localStorage.setItem('stats', JSON.stringify(stats));
+            
+            setTimeout(() => {
+                alert(`⏰ RAPPEL !\n\n${message}`);
+                if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+                deleteReminder(reminder.id);
+            }, minutes * 60000);
+            
+            document.getElementById('reminder-minutes').value = '5';
+            document.getElementById('reminder-message').value = '';
+            loadReminders();
+            alert(`✅ Rappel créé pour dans ${minutes} min`);
+        }
+        
+        function loadReminders() {
+            const list = document.getElementById('reminders-list');
+            list.innerHTML = reminders.length === 0 ? '<div class="card">Aucun rappel actif</div>' : '';
+            reminders.forEach(reminder => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; margin-bottom: 8px;">⏰ ${reminder.message}</div>
+                            <div style="font-size: 14px; color: var(--text-secondary);">Dans ${reminder.minutes} minute(s) • ${reminder.time}</div>
+                        </div>
+                        <button class="header-btn" style="margin: 0;" onclick
