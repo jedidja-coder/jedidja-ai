@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Jedidja - Ton assistant IA personnel">
+    <meta name="description" content="Jedidja Premium - Assistant IA Ultime">
     <meta name="theme-color" content="#343541">
     <title>Jedidja - Assistant IA</title>
+    
+    <!-- Marked.js pour Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Highlight.js pour coloration syntaxique -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,6 +46,36 @@
             --shadow: rgba(0, 0, 0, 0.3);
         }
         
+        [data-theme="blue"] {
+            --bg-primary: #f0f4ff;
+            --bg-secondary: #e6eeff;
+            --bg-sidebar: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #cbd5e1;
+            --user-msg-bg: #e0e7ff;
+            --assistant-msg-bg: #f0f4ff;
+            --accent-color: #3b82f6;
+            --hover-bg: #e0e7ff;
+            --input-bg: #ffffff;
+            --shadow: rgba(59, 130, 246, 0.1);
+        }
+        
+        [data-theme="purple"] {
+            --bg-primary: #faf5ff;
+            --bg-secondary: #f3e8ff;
+            --bg-sidebar: #ffffff;
+            --text-primary: #2d1b4e;
+            --text-secondary: #7c3aed;
+            --border-color: #e9d5ff;
+            --user-msg-bg: #f3e8ff;
+            --assistant-msg-bg: #faf5ff;
+            --accent-color: #8b5cf6;
+            --hover-bg: #f3e8ff;
+            --input-bg: #ffffff;
+            --shadow: rgba(139, 92, 246, 0.1);
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-secondary);
@@ -72,20 +108,22 @@
         .new-chat-btn {
             width: 100%;
             padding: 12px 16px;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
+            background: var(--accent-color);
+            border: none;
+            color: white;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 14px;
+            font-weight: 600;
             transition: all 0.2s;
         }
         
         .new-chat-btn:hover {
-            background: var(--hover-bg);
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
         
         .sidebar-content {
@@ -120,7 +158,38 @@
             border-top: 1px solid var(--border-color);
         }
         
-        .theme-toggle {
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .theme-btn.active {
+            border-color: var(--accent-color);
+            border-width: 3px;
+        }
+        
+        .theme-btn.light { background: linear-gradient(135deg, #fff, #f0f0f0); }
+        .theme-btn.dark { background: linear-gradient(135deg, #2d2d2d, #1a1a1a); }
+        .theme-btn.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .theme-btn.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        
+        .sound-toggle {
             width: 100%;
             padding: 12px 16px;
             background: transparent;
@@ -130,16 +199,16 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
             font-size: 14px;
             transition: all 0.2s;
         }
         
-        .theme-toggle:hover {
+        .sound-toggle:hover {
             background: var(--hover-bg);
         }
         
-        /* Main Content - STRUCTURE FIXÉE */
+        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
@@ -188,7 +257,7 @@
             background: var(--hover-bg);
         }
         
-        /* CHAT SECTION - STRUCTURE CORRIGÉE */
+        /* Chat Section */
         .chat-section {
             display: flex;
             flex-direction: column;
@@ -201,7 +270,6 @@
             display: flex;
         }
         
-        /* Zone de messages scrollable */
         .chat-messages-container {
             flex: 1;
             overflow-y: auto;
@@ -215,11 +283,38 @@
             min-height: 100%;
         }
         
+        /* Suggestions */
+        .suggestions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            justify-content: center;
+        }
+        
+        .suggestion-btn {
+            padding: 10px 16px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .suggestion-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
         .message {
             display: flex;
             gap: 16px;
             padding: 24px 0;
             animation: slideIn 0.3s ease-out;
+            position: relative;
         }
         
         @keyframes slideIn {
@@ -265,6 +360,124 @@
             word-wrap: break-word;
         }
         
+        .message-actions {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+        
+        .copy-btn {
+            padding: 6px 10px;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        /* Markdown Styling */
+        .message-content h1, .message-content h2, .message-content h3 {
+            margin: 16px 0 8px;
+            font-weight: 600;
+        }
+        
+        .message-content p {
+            margin: 8px 0;
+        }
+        
+        .message-content code {
+            background: var(--hover-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .message-content pre {
+            background: #1e1e1e;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 12px 0;
+            position: relative;
+        }
+        
+        .message-content pre code {
+            background: none;
+            padding: 0;
+            color: #d4d4d4;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #2d2d2d;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -12px;
+        }
+        
+        .code-lang {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .message-content ul, .message-content ol {
+            margin: 8px 0;
+            padding-left: 24px;
+        }
+        
+        .message-content li {
+            margin: 4px 0;
+        }
+        
+        .message-content blockquote {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 16px;
+            margin: 12px 0;
+            color: var(--text-secondary);
+        }
+        
+        .message-content a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        
+        .message-content a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Typing Effect */
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--accent-color);
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+        
         /* Typing Indicator */
         .typing-indicator {
             display: none;
@@ -302,7 +515,7 @@
             30% { transform: translateY(-8px); opacity: 1; }
         }
         
-        /* INPUT AREA - FIXÉ EN BAS */
+        /* Input Area */
         .input-container {
             padding: 16px 24px 24px;
             border-top: 1px solid var(--border-color);
@@ -318,7 +531,7 @@
         
         .chat-input {
             width: 100%;
-            padding: 14px 50px 14px 16px;
+            padding: 14px 90px 14px 16px;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -337,10 +550,15 @@
             box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
         }
         
-        .send-btn {
+        .input-actions {
             position: absolute;
             right: 12px;
             bottom: 10px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .mic-btn, .send-btn {
             width: 32px;
             height: 32px;
             background: var(--accent-color);
@@ -352,6 +570,27 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+        }
+        
+        .mic-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .mic-btn:hover {
+            background: var(--hover-bg);
+        }
+        
+        .mic-btn.recording {
+            background: #ef4444;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
         
         .send-btn:hover:not(:disabled) {
@@ -373,67 +612,6 @@
         
         .section-content.active {
             display: block;
-        }
-        
-        .section-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            color: var(--text-primary);
-        }
-        
-        .card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-        
-        .card-header {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-        }
-        
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            margin-bottom: 12px;
-            font-family: inherit;
-        }
-        
-        .btn-primary {
-            padding: 10px 20px;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary:hover {
-            background: #0e8c6d;
-        }
-        
-        .info-banner {
-            background: rgba(16, 163, 127, 0.1);
-            border: 1px solid rgba(16, 163, 127, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-            color: var(--text-primary);
-            font-size: 14px;
-            line-height: 1.5;
         }
         
         /* Mobile Responsive */
@@ -461,6 +639,14 @@
             .input-container {
                 padding: 12px 16px 16px;
             }
+            
+            .suggestions {
+                flex-direction: column;
+            }
+            
+            .suggestion-btn {
+                width: 100%;
+            }
         }
         
         /* Scrollbar */
@@ -479,6 +665,25 @@
         
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-secondary);
+        }
+        
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 2000;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
@@ -513,9 +718,16 @@
             </div>
             
             <div class="sidebar-footer">
-                <button class="theme-toggle" onclick="toggleTheme()">
-                    <span id="theme-icon">🌙</span>
-                    <span id="theme-text">Mode sombre</span>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; padding: 0 4px;">Thèmes</div>
+                <div class="theme-selector">
+                    <div class="theme-btn light active" onclick="setTheme('light')" title="Clair"></div>
+                    <div class="theme-btn dark" onclick="setTheme('dark')" title="Sombre"></div>
+                    <div class="theme-btn blue" onclick="setTheme('blue')" title="Bleu"></div>
+                    <div class="theme-btn purple" onclick="setTheme('purple')" title="Violet"></div>
+                </div>
+                <button class="sound-toggle" onclick="toggleSound()">
+                    <span>🔊 Sons</span>
+                    <span id="sound-status">OFF</span>
                 </button>
             </div>
         </aside>
@@ -525,7 +737,7 @@
             <div class="chat-header">
                 <h1 id="section-title">
                     <span>🤖</span>
-                    <span>Jedidja</span>
+                    <span>Jedidja Premium</span>
                 </h1>
                 <div class="header-actions">
                     <button class="header-btn" onclick="clearChat()">🗑️ Effacer</button>
@@ -537,10 +749,26 @@
             <div id="chat-section" class="chat-section active">
                 <div class="chat-messages-container" id="chat-container">
                     <div class="messages-wrapper" id="messages">
+                        <div class="suggestions" id="suggestions">
+                            <button class="suggestion-btn" onclick="useSuggestion(this)">💡 Explique-moi un concept</button>
+                            <button class="suggestion-btn" onclick="useSuggestion(this)">💻 Aide-moi à coder</button>
+                            <button class="suggestion-btn" onclick="useSuggestion(this)">✨ Sois créatif</button>
+                            <button class="suggestion-btn" onclick="useSuggestion(this)">📚 Apprends-moi quelque chose</button>
+                        </div>
+                        
                         <div class="message assistant">
                             <div class="message-avatar">🤖</div>
                             <div class="message-content">
-                                Bonjour ! Je suis Jedidja, ton assistant IA personnel. Je suis prêt à t'aider avec tes questions, projets, ou simplement pour discuter ! Comment puis-je t'aider aujourd'hui ? 😊
+                                <p>Bonjour ! Je suis <strong>Jedidja Premium</strong>, ton assistant IA de nouvelle génération. 🚀</p>
+                                <p>Voici ce que je peux faire pour toi :</p>
+                                <ul>
+                                    <li>💬 Converser naturellement sur n'importe quel sujet</li>
+                                    <li>💻 T'aider avec la programmation (code avec coloration syntaxique)</li>
+                                    <li>📝 Créer du contenu (articles, histoires, poèmes...)</li>
+                                    <li>🎓 T'enseigner de nouveaux concepts</li>
+                                    <li>🎨 Utiliser le markdown pour des réponses structurées</li>
+                                </ul>
+                                <p>Clique sur une suggestion ci-dessus ou tape ta question ! 😊</p>
                             </div>
                         </div>
                     </div>
@@ -559,59 +787,64 @@
                         <textarea 
                             class="chat-input" 
                             id="input" 
-                            placeholder="Envoie un message à Jedidja..." 
+                            placeholder="Envoie un message à Jedidja Premium..." 
                             rows="1"
                             onkeydown="handleKeyDown(event)"
                         ></textarea>
-                        <button class="send-btn" id="send-btn" onclick="sendMessage()">
-                            ➤
-                        </button>
+                        <div class="input-actions">
+                            <button class="mic-btn" id="mic-btn" onclick="toggleVoiceInput()" title="Reconnaissance vocale">
+                                🎤
+                            </button>
+                            <button class="send-btn" id="send-btn" onclick="sendMessage()">
+                                ➤
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <!-- Notes Section -->
             <div id="notes-section" class="section-content">
-                <h2 class="section-title">📝 Mes Notes</h2>
-                <div class="card">
-                    <div class="card-header">Ajouter une note</div>
-                    <textarea class="input-field" id="note-input" rows="3" placeholder="Écris ta note ici..."></textarea>
-                    <button class="btn-primary" onclick="addNote()">Ajouter</button>
+                <h2 style="font-size: 24px; margin-bottom: 24px;">📝 Mes Notes</h2>
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+                    <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Ajouter une note</div>
+                    <textarea id="note-input" rows="3" placeholder="Écris ta note ici..." style="width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px; font-family: inherit;"></textarea>
+                    <button onclick="addNote()" style="padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Ajouter</button>
                 </div>
                 <div id="notes-list"></div>
             </div>
             
             <!-- Reminders Section -->
             <div id="reminders-section" class="section-content">
-                <h2 class="section-title">⏰ Mes Rappels</h2>
-                <div class="card">
-                    <div class="card-header">Créer un rappel</div>
-                    <input type="number" class="input-field" id="reminder-minutes" min="1" value="5" placeholder="Minutes">
-                    <input type="text" class="input-field" id="reminder-message" placeholder="Message du rappel">
-                    <button class="btn-primary" onclick="addReminder()">Créer</button>
+                <h2 style="font-size: 24px; margin-bottom: 24px;">⏰ Mes Rappels</h2>
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+                    <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Créer un rappel</div>
+                    <input type="number" id="reminder-minutes" min="1" value="5" placeholder="Minutes" style="width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px;">
+                    <input type="text" id="reminder-message" placeholder="Message du rappel" style="width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px;">
+                    <button onclick="addReminder()" style="padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Créer</button>
                 </div>
                 <div id="reminders-list"></div>
             </div>
             
             <!-- Stats Section -->
             <div id="stats-section" class="section-content">
-                <h2 class="section-title">📊 Statistiques</h2>
-                <div class="info-banner">
-                    <strong>Utilisation de Jedidja</strong><br>
-                    Voici un résumé de ton activité avec l'assistant.
+                <h2 style="font-size: 24px; margin-bottom: 24px;">📊 Statistiques</h2>
+                <div style="background: rgba(16, 163, 127, 0.1); border: 1px solid rgba(16, 163, 127, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px; line-height: 1.5;">
+                    <strong>Utilisation de Jedidja Premium</strong><br>
+                    <small>Voici un résumé de ton activité avec l'assistant.</small>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                    <div class="card" style="text-align: center;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center;">
                         <div style="font-size: 36px; margin-bottom: 8px;">💬</div>
                         <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-messages">0</div>
                         <div style="font-size: 14px; color: var(--text-secondary);">Messages envoyés</div>
                     </div>
-                    <div class="card" style="text-align: center;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center;">
                         <div style="font-size: 36px; margin-bottom: 8px;">📝</div>
                         <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-notes">0</div>
                         <div style="font-size: 14px; color: var(--text-secondary);">Notes créées</div>
                     </div>
-                    <div class="card" style="text-align: center;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center;">
                         <div style="font-size: 36px; margin-bottom: 8px;">⏰</div>
                         <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-reminders">0</div>
                         <div style="font-size: 14px; color: var(--text-secondary);">Rappels actifs</div>
@@ -621,29 +854,125 @@
         </main>
     </div>
     
+    <!-- Audio pour les sons -->
+    <audio id="sound-send" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS36+ifUgwNTKXh8LhjHQU2jdXuzHosBSJ0yO/blEILElyw6OyrWRQJQ5zd8sFuIwUrgc7y2Yk2CBhktuvon1ILDEyl4fC4Yx0FNo3V7sx6LAUidMjv25RCCxJcsOjsq1kUCUOc3fLBbiMFK4HO8tmJNggYZLbr6J9SCwxMpeHwuGMdBTaN1e7MeiwFInTI79uUQgsS" type="audio/wav">
+    </audio>
+    <audio id="sound-receive" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS36+ifUgwNTKXh8LhjHQU2jdXuzHosBSJ0yO/blEILElyw6OyrWRQJQ5zd8sFuIwUrgc7y2Yk2CBhktuvon1ILDEyl4fC4Yx0FNo3V7sx6LAUidMjv25RCCxJcsOjsq1kUCUOc3fLBbiMFK4HO8tmJNggYZLbr6J9SCwxMpeHwuGMdBTaN1e7MeiwFInTI79uUQgsS" type="audio/wav">
+    </audio>
+    
     <script>
-        // Theme Management
-        let currentTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        updateThemeButton();
+        // Configuration
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    return hljs.highlight(code, { language: lang }).value;
+                }
+                return hljs.highlightAuto(code).value;
+            },
+            breaks: true,
+            gfm: true
+        });
         
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            localStorage.setItem('theme', currentTheme);
-            updateThemeButton();
+        // State
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let soundEnabled = localStorage.getItem('sound') === 'true';
+        let voiceEnabled = false;
+        let conversation = [{role: "system", content: "Tu es Jedidja Premium, un assistant IA de nouvelle génération. Tu es sympathique, intelligent et créatif. Tu utilises le markdown pour structurer tes réponses. Tu fournis des exemples de code avec la bonne syntaxe. Tu es concis mais complet."}];
+        let stats = JSON.parse(localStorage.getItem('stats') || '{"messages": 0, "notes": 0, "reminders": 0}');
+        let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+        let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+        let recognition = null;
+        
+        // Init
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateThemeButtons();
+        updateSoundButton();
+        
+        // Theme Management
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            updateThemeButtons();
+            showNotification(`Thème ${theme} activé ! ✨`);
         }
         
-        function updateThemeButton() {
-            const icon = document.getElementById('theme-icon');
-            const text = document.getElementById('theme-text');
-            if (currentTheme === 'dark') {
-                icon.textContent = '☀️';
-                text.textContent = 'Mode clair';
-            } else {
-                icon.textContent = '🌙';
-                text.textContent = 'Mode sombre';
+        function updateThemeButtons() {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.theme-btn.${currentTheme}`).classList.add('active');
+        }
+        
+        // Sound Management
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('sound', soundEnabled);
+            updateSoundButton();
+            showNotification(soundEnabled ? '🔊 Sons activés' : '🔇 Sons désactivés');
+            if (soundEnabled) playSound('send');
+        }
+        
+        function updateSoundButton() {
+            document.getElementById('sound-status').textContent = soundEnabled ? 'ON' : 'OFF';
+        }
+        
+        function playSound(type) {
+            if (!soundEnabled) return;
+            const sound = document.getElementById(`sound-${type}`);
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(() => {});
             }
+        }
+        
+        // Voice Input (Speech Recognition)
+        function toggleVoiceInput() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('❌ Reconnaissance vocale non supportée par ton navigateur');
+                return;
+            }
+            
+            const micBtn = document.getElementById('mic-btn');
+            
+            if (recognition && recognition.recording) {
+                recognition.stop();
+                micBtn.classList.remove('recording');
+                return;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'fr-FR';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.recording = true;
+            
+            recognition.onstart = () => {
+                micBtn.classList.add('recording');
+                showNotification('🎤 Écoute en cours...');
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('input').value = transcript;
+                micBtn.classList.remove('recording');
+                showNotification('✅ Message transcrit !');
+            };
+            
+            recognition.onerror = (event) => {
+                micBtn.classList.remove('recording');
+                showNotification('❌ Erreur : ' + event.error);
+            };
+            
+            recognition.onend = () => {
+                micBtn.classList.remove('recording');
+                recognition.recording = false;
+            };
+            
+            recognition.start();
         }
         
         // Navigation
@@ -660,7 +989,7 @@
             }
             
             const titles = {
-                'chat': 'Jedidja',
+                'chat': 'Jedidja Premium',
                 'notes': 'Notes',
                 'reminders': 'Rappels',
                 'stats': 'Statistiques'
@@ -672,11 +1001,22 @@
             if (section === 'stats') loadStats();
         }
         
-        // Chat Logic
-        let conversation = [{role: "system", content: "Tu es Jedidja, un assistant IA amical en français. Tu es sympathique, drôle et serviable. Tu réponds de manière claire et structurée."}];
-        let voiceEnabled = false;
-        let stats = JSON.parse(localStorage.getItem('stats') || '{"messages": 0, "notes": 0, "reminders": 0}');
+        // Suggestions
+        function useSuggestion(btn) {
+            const suggestions = {
+                '💡 Explique-moi un concept': 'Peux-tu m\'expliquer un concept complexe de manière simple ?',
+                '💻 Aide-moi à coder': 'J\'ai besoin d\'aide pour coder quelque chose. Peux-tu m\'aider ?',
+                '✨ Sois créatif': 'Écris-moi quelque chose de créatif et original !',
+                '📚 Apprends-moi quelque chose': 'Apprends-moi quelque chose d\'intéressant que je ne savais pas !'
+            };
+            
+            const message = suggestions[btn.textContent] || btn.textContent;
+            document.getElementById('input').value = message;
+            document.getElementById('suggestions').style.display = 'none';
+            sendMessage();
+        }
         
+        // Chat
         function newChat() {
             if (confirm('Commencer une nouvelle conversation ?')) {
                 clearChat();
@@ -689,9 +1029,11 @@
             
             if (!message) return;
             
-            addMessageToUI('user', message);
+            playSound('send');
+            addMessageToUI('user', message, false);
             input.value = '';
             input.style.height = 'auto';
+            document.getElementById('suggestions').style.display = 'none';
             
             conversation.push({role: 'user', content: message});
             document.getElementById('send-btn').disabled = true;
@@ -708,7 +1050,8 @@
                 
                 if (data.success) {
                     conversation.push({role: 'assistant', content: data.response});
-                    addMessageToUI('assistant', data.response);
+                    playSound('receive');
+                    await addMessageToUI('assistant', data.response, true);
                     if (voiceEnabled) speak(data.response);
                     stats.messages++;
                     localStorage.setItem('stats', JSON.stringify(stats));
@@ -716,32 +1059,86 @@
                     throw new Error(data.error);
                 }
             } catch (error) {
-                addMessageToUI('assistant', '❌ Désolé, une erreur s\'est produite. Réessaie dans quelques instants.');
+                addMessageToUI('assistant', '❌ Désolé, une erreur s\'est produite. Réessaie dans quelques instants.', false);
             }
             
             document.getElementById('typing').classList.remove('active');
             document.getElementById('send-btn').disabled = false;
         }
         
-        function addMessageToUI(type, content) {
+        async function addMessageToUI(type, content, withTyping = false) {
             const wrapper = document.getElementById('messages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             
             const avatar = type === 'user' ? '👤' : '🤖';
+            const messageId = 'msg-' + Date.now();
             
             messageDiv.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
-                <div class="message-content">${content}</div>
+                <div class="message-content" id="${messageId}"></div>
+                ${type === 'assistant' ? '<div class="message-actions"><button class="copy-btn" onclick="copyMessage(\'' + messageId + '\')">📋 Copier</button></div>' : ''}
             `;
             
             wrapper.appendChild(messageDiv);
             
-            // Scroll automatique vers le bas
+            const contentDiv = document.getElementById(messageId);
+            
+            if (withTyping && type === 'assistant') {
+                // Typing effect
+                await typeMessage(contentDiv, content);
+            } else {
+                // Instant display with markdown
+                if (type === 'assistant') {
+                    contentDiv.innerHTML = marked.parse(content);
+                    contentDiv.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightElement(block);
+                    });
+                } else {
+                    contentDiv.textContent = content;
+                }
+            }
+            
+            scrollToBottom();
+        }
+        
+        async function typeMessage(element, text) {
+            const html = marked.parse(text);
+            element.innerHTML = '';
+            
+            // Pour l'effet de frappe, on affiche le texte progressivement
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const textContent = tempDiv.textContent;
+            
+            const speed = 20; // ms par caractère
+            
+            for (let i = 0; i < textContent.length; i++) {
+                element.textContent = textContent.substring(0, i + 1);
+                if (i % 5 === 0) scrollToBottom(); // Scroll tous les 5 caractères
+                await new Promise(resolve => setTimeout(resolve, speed));
+            }
+            
+            // Afficher le HTML final avec markdown
+            element.innerHTML = html;
+            element.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+            scrollToBottom();
+        }
+        
+        function copyMessage(messageId) {
+            const content = document.getElementById(messageId).textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                showNotification('✅ Message copié !');
+            });
+        }
+        
+        function scrollToBottom() {
             const container = document.getElementById('chat-container');
             setTimeout(() => {
                 container.scrollTop = container.scrollHeight;
-            }, 100);
+            }, 50);
         }
         
         function handleKeyDown(event) {
@@ -754,6 +1151,12 @@
         function clearChat() {
             conversation = [conversation[0]];
             document.getElementById('messages').innerHTML = `
+                <div class="suggestions" id="suggestions">
+                    <button class="suggestion-btn" onclick="useSuggestion(this)">💡 Explique-moi un concept</button>
+                    <button class="suggestion-btn" onclick="useSuggestion(this)">💻 Aide-moi à coder</button>
+                    <button class="suggestion-btn" onclick="useSuggestion(this)">✨ Sois créatif</button>
+                    <button class="suggestion-btn" onclick="useSuggestion(this)">📚 Apprends-moi quelque chose</button>
+                </div>
                 <div class="message assistant">
                     <div class="message-avatar">🤖</div>
                     <div class="message-content">Nouvelle conversation ! Comment puis-je t'aider ? 😊</div>
@@ -763,12 +1166,12 @@
         
         function toggleVoice() {
             voiceEnabled = !voiceEnabled;
-            alert(voiceEnabled ? '🔊 Voix activée' : '🔇 Voix désactivée');
+            showNotification(voiceEnabled ? '🔊 Voix activée' : '🔇 Voix désactivée');
         }
         
         function speak(text) {
             if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1F9FF}]/gu, ''));
+                const utterance = new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').replace(/[#*`]/g, ''));
                 utterance.lang = 'fr-FR';
                 utterance.rate = 0.9;
                 window.speechSynthesis.speak(utterance);
@@ -776,8 +1179,6 @@
         }
         
         // Notes
-        let notes = JSON.parse(localStorage.getItem('notes') || '[]');
-        
         function addNote() {
             const input = document.getElementById('note-input');
             const text = input.value.trim();
@@ -789,21 +1190,22 @@
             localStorage.setItem('stats', JSON.stringify(stats));
             input.value = '';
             loadNotes();
+            showNotification('✅ Note ajoutée !');
         }
         
         function loadNotes() {
             const list = document.getElementById('notes-list');
-            list.innerHTML = notes.length === 0 ? '<div class="card">Aucune note pour le moment</div>' : '';
+            list.innerHTML = notes.length === 0 ? '<div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center; color: var(--text-secondary);">Aucune note pour le moment</div>' : '';
             notes.forEach(note => {
                 const div = document.createElement('div');
-                div.className = 'card';
+                div.style.cssText = 'background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;';
                 div.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div style="flex: 1;">
                             <div style="margin-bottom: 8px;">${note.text}</div>
                             <div style="font-size: 12px; color: var(--text-secondary);">${note.timestamp}</div>
                         </div>
-                        <button class="header-btn" style="margin: 0;" onclick="deleteNote(${note.id})">🗑️</button>
+                        <button onclick="deleteNote(${note.id})" style="padding: 6px 10px; background: transparent; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; transition: all 0.2s;">🗑️</button>
                     </div>
                 `;
                 list.appendChild(div);
@@ -817,12 +1219,11 @@
                 stats.notes--;
                 localStorage.setItem('stats', JSON.stringify(stats));
                 loadNotes();
+                showNotification('✅ Note supprimée');
             }
         }
         
         // Reminders
-        let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-        
         function addReminder() {
             const minutes = parseInt(document.getElementById('reminder-minutes').value);
             const message = document.getElementById('reminder-message').value.trim();
@@ -841,30 +1242,31 @@
             localStorage.setItem('stats', JSON.stringify(stats));
             
             setTimeout(() => {
-                alert(`⏰ RAPPEL !\n\n${message}`);
+                showNotification(`⏰ RAPPEL !\n\n${message}`);
                 if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+                if (soundEnabled) playSound('receive');
                 deleteReminder(reminder.id);
             }, minutes * 60000);
             
             document.getElementById('reminder-minutes').value = '5';
             document.getElementById('reminder-message').value = '';
             loadReminders();
-            alert(`✅ Rappel créé pour dans ${minutes} min`);
+            showNotification(`✅ Rappel créé pour dans ${minutes} min`);
         }
         
         function loadReminders() {
             const list = document.getElementById('reminders-list');
-            list.innerHTML = reminders.length === 0 ? '<div class="card">Aucun rappel actif</div>' : '';
+            list.innerHTML = reminders.length === 0 ? '<div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center; color: var(--text-secondary);">Aucun rappel actif</div>' : '';
             reminders.forEach(reminder => {
                 const div = document.createElement('div');
-                div.className = 'card';
+                div.style.cssText = 'background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;';
                 div.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div style="flex: 1;">
                             <div style="font-weight: 600; margin-bottom: 8px;">⏰ ${reminder.message}</div>
                             <div style="font-size: 14px; color: var(--text-secondary);">Dans ${reminder.minutes} minute(s) • ${reminder.time}</div>
                         </div>
-                        <button class="header-btn" style="margin: 0;" onclick="deleteReminder(${reminder.id})">🗑️</button>
+                        <button onclick="deleteReminder(${reminder.id})" style="padding: 6px 10px; background: transparent; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer;">🗑️</button>
                     </div>
                 `;
                 list.appendChild(div);
@@ -886,10 +1288,31 @@
             document.getElementById('stat-reminders').textContent = stats.reminders;
         }
         
+        // Notifications
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+        
         // Auto-resize textarea
         document.getElementById('input').addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('input').focus();
+            }
         });
         
         // Init
