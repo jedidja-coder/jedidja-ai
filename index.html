@@ -6,13 +6,11 @@
     <meta name="description" content="Jedidja - Ton assistant IA personnel">
     <meta name="theme-color" content="#343541">
     <title>Jedidja - Assistant IA</title>
-    <link rel="stylesheet" href="chat-fix.css">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            /* Thème Clair (ChatGPT style) */
             --bg-primary: #ffffff;
             --bg-secondary: #f7f7f8;
             --bg-sidebar: #ffffff;
@@ -28,7 +26,6 @@
         }
         
         [data-theme="dark"] {
-            /* Thème Sombre (ChatGPT dark) */
             --bg-primary: #343541;
             --bg-secondary: #444654;
             --bg-sidebar: #202123;
@@ -44,10 +41,11 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-secondary);
             color: var(--text-primary);
             transition: all 0.3s ease;
+            height: 100vh;
             overflow: hidden;
         }
         
@@ -63,7 +61,7 @@
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
         
         .sidebar-header {
@@ -141,12 +139,14 @@
             background: var(--hover-bg);
         }
         
-        /* Main Content */
+        /* Main Content - STRUCTURE FIXÉE */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             background: var(--bg-primary);
+            overflow: hidden;
+            height: 100vh;
         }
         
         .chat-header {
@@ -156,6 +156,7 @@
             align-items: center;
             justify-content: space-between;
             background: var(--bg-primary);
+            flex-shrink: 0;
         }
         
         .chat-header h1 {
@@ -187,19 +188,31 @@
             background: var(--hover-bg);
         }
         
-        /* Chat Area */
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
+        /* CHAT SECTION - STRUCTURE CORRIGÉE */
+        .chat-section {
             display: flex;
             flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .chat-section.active {
+            display: flex;
+        }
+        
+        /* Zone de messages scrollable */
+        .chat-messages-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
         
         .messages-wrapper {
             max-width: 800px;
             margin: 0 auto;
-            width: 100%;
             padding: 24px;
+            min-height: 100%;
         }
         
         .message {
@@ -249,13 +262,52 @@
             color: var(--text-primary);
             line-height: 1.6;
             font-size: 15px;
+            word-wrap: break-word;
         }
         
-        /* Input Area */
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 24px 0;
+            background: var(--assistant-msg-bg);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .typing-indicator.active {
+            display: block;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+        
+        /* INPUT AREA - FIXÉ EN BAS */
         .input-container {
-            padding: 24px;
+            padding: 16px 24px 24px;
             border-top: 1px solid var(--border-color);
             background: var(--bg-primary);
+            flex-shrink: 0;
         }
         
         .input-wrapper {
@@ -288,7 +340,7 @@
         .send-btn {
             position: absolute;
             right: 12px;
-            bottom: 12px;
+            bottom: 10px;
             width: 32px;
             height: 32px;
             background: var(--accent-color);
@@ -311,48 +363,12 @@
             cursor: not-allowed;
         }
         
-        /* Typing Indicator */
-        .typing-indicator {
-            display: none;
-            padding: 24px 0;
-            background: var(--assistant-msg-bg);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .typing-indicator.active {
-            display: block;
-        }
-        
-        .typing-dots {
-            display: flex;
-            gap: 4px;
-            padding: 0 16px;
-        }
-        
-        .typing-dots span {
-            width: 8px;
-            height: 8px;
-            background: var(--text-secondary);
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-        
-        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
-            30% { transform: translateY(-8px); opacity: 1; }
-        }
-        
         /* Section Content */
         .section-content {
             display: none;
             padding: 24px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
+            overflow-y: auto;
+            flex: 1;
         }
         
         .section-content.active {
@@ -409,7 +425,6 @@
             background: #0e8c6d;
         }
         
-        /* Info Banner */
         .info-banner {
             background: rgba(16, 163, 127, 0.1);
             border: 1px solid rgba(16, 163, 127, 0.3);
@@ -428,6 +443,7 @@
                 left: -260px;
                 height: 100%;
                 z-index: 1000;
+                transition: left 0.3s;
             }
             
             .sidebar.open {
@@ -440,6 +456,10 @@
             
             .message {
                 padding: 16px 0;
+            }
+            
+            .input-container {
+                padding: 12px 16px 16px;
             }
         }
         
@@ -514,8 +534,8 @@
             </div>
             
             <!-- Chat Section -->
-            <div id="chat-section" class="section-content active" style="display: flex; flex-direction: column; flex: 1; padding: 0;">
-                <div class="chat-container">
+            <div id="chat-section" class="chat-section active">
+                <div class="chat-messages-container" id="chat-container">
                     <div class="messages-wrapper" id="messages">
                         <div class="message assistant">
                             <div class="message-avatar">🤖</div>
@@ -526,15 +546,10 @@
                     </div>
                     
                     <div class="typing-indicator" id="typing">
-                        <div class="messages-wrapper">
-                            <div class="message assistant">
-                                <div class="message-avatar">🤖</div>
-                                <div class="typing-dots">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </div>
-                            </div>
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
                         </div>
                     </div>
                 </div>
@@ -634,10 +649,15 @@
         // Navigation
         function showSection(section) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.chat-section, .section-content').forEach(sec => sec.classList.remove('active'));
             
             event.target.closest('.nav-item').classList.add('active');
-            document.getElementById(section + '-section').classList.add('active');
+            
+            if (section === 'chat') {
+                document.getElementById('chat-section').classList.add('active');
+            } else {
+                document.getElementById(section + '-section').classList.add('active');
+            }
             
             const titles = {
                 'chat': 'Jedidja',
@@ -716,7 +736,12 @@
             `;
             
             wrapper.appendChild(messageDiv);
-            document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight;
+            
+            // Scroll automatique vers le bas
+            const container = document.getElementById('chat-container');
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
         }
         
         function handleKeyDown(event) {
@@ -778,42 +803,7 @@
                             <div style="margin-bottom: 8px;">${note.text}</div>
                             <div style="font-size: 12px; color: var(--text-secondary);">${note.timestamp}</div>
                         </div>
-                        <button class="header-btn" style="margin: 0;" onclick="deleteReminder(${reminder.id})">🗑️</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-        
-        function deleteReminder(id) {
-            reminders = reminders.filter(r => r.id !== id);
-            localStorage.setItem('reminders', JSON.stringify(reminders));
-            stats.reminders--;
-            localStorage.setItem('stats', JSON.stringify(stats));
-            loadReminders();
-        }
-        
-        // Stats
-        function loadStats() {
-            document.getElementById('stat-messages').textContent = stats.messages;
-            document.getElementById('stat-notes').textContent = stats.notes;
-            document.getElementById('stat-reminders').textContent = stats.reminders;
-        }
-        
-        // Auto-resize textarea
-        document.getElementById('input').addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
-        });
-        
-        // Init
-        window.onload = function() {
-            document.getElementById('input').focus();
-            loadStats();
-        };
-    </script>
-</body>
-</html>="deleteNote(${note.id})">🗑️</button>
+                        <button class="header-btn" style="margin: 0;" onclick="deleteNote(${note.id})">🗑️</button>
                     </div>
                 `;
                 list.appendChild(div);
@@ -874,4 +864,39 @@
                             <div style="font-weight: 600; margin-bottom: 8px;">⏰ ${reminder.message}</div>
                             <div style="font-size: 14px; color: var(--text-secondary);">Dans ${reminder.minutes} minute(s) • ${reminder.time}</div>
                         </div>
-                        <button class="header-btn" style="margin: 0;" onclick
+                        <button class="header-btn" style="margin: 0;" onclick="deleteReminder(${reminder.id})">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+        
+        function deleteReminder(id) {
+            reminders = reminders.filter(r => r.id !== id);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            stats.reminders--;
+            localStorage.setItem('stats', JSON.stringify(stats));
+            loadReminders();
+        }
+        
+        // Stats
+        function loadStats() {
+            document.getElementById('stat-messages').textContent = stats.messages;
+            document.getElementById('stat-notes').textContent = stats.notes;
+            document.getElementById('stat-reminders').textContent = stats.reminders;
+        }
+        
+        // Auto-resize textarea
+        document.getElementById('input').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+        
+        // Init
+        window.onload = function() {
+            document.getElementById('input').focus();
+            loadStats();
+        };
+    </script>
+</body>
+</html>
