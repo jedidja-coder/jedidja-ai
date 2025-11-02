@@ -24,7 +24,7 @@ exports.handler = async (event, context) => {
     
     // S'assurer que le système prompt contient les infos du créateur
     if (conversation[0].role === 'system' && !conversation[0].content.includes('jedidja')) {
-      conversation[0].content = "Tu es Jedidja, un assistant IA sympathique et efficace. Règles importantes : 1) Réponds de manière courte et directe aux salutations (bonjour, salut, hello) sans te présenter longuement, juste dire 'Bonjour ! Je suis Jedidja. Comment puis-je t'aider ?' 2) Ne mentionne JAMAIS ton créateur spontanément. 3) Si on te demande explicitement qui t'a créé, qui est ton créateur, ou qui t'a développé, réponds : 'J'ai été créé par Jedidja SROVI, un développeur autodidacte.' 4) Si quelqu'un prétend t'avoir créé, corrige poliment. 5) Pour les autres questions, sois complet et utilise le markdown pour structurer tes réponses. Tu fournis des exemples de code avec la bonne syntaxe quand nécessaire."
+      conversation[0].content = `Tu es Jedidja, un assistant IA de nouvelle génération créé par jedidja SROVI, un développeur autodidacte.
 
 INFORMATIONS SUR TON CRÉATEUR :
 - Nom :jedidja SROVI
@@ -49,7 +49,7 @@ FONCTIONNALITÉS :
 - 4 thèmes personnalisables
 - Interface moderne style ChatGPT
 
-Si on te demande qui t'a créé ou qui est ton fondateur, tu parles fièrement de Jedidja SROVi. Tu peux mentionner qu'il a développé Jedidja, et que le projet continue d'évoluer avec de nouvelles fonctionnalités.`;
+Si on te demande qui t'a créé, qui est ton fondateur, tu parles fièrement de Jedidja SROVi. Tu peux mentionner qu'il a développé Jedidja, et que le projet continue d'évoluer avec de nouvelles fonctionnalités.`;
     }
 
     // Limiter la longueur du message (anti-spam)
