@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Jedidja - Assistant IA Ultime">
+    <meta name="description" content="Jedidja - Assistant IA">
     <meta name="theme-color" content="#343541">
     <title>Jedidja - Assistant IA</title>
     
-    <!-- Marked.js pour Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Highlight.js pour coloration syntaxique -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     
@@ -17,72 +15,65 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f7f7f8;
-            --bg-sidebar: #ffffff;
-            --text-primary: #353740;
-            --text-secondary: #6e6e80;
-            --border-color: #e5e5e5;
-            --user-msg-bg: #f7f7f8;
-            --assistant-msg-bg: #ffffff;
-            --accent-color: #10a37f;
-            --hover-bg: #f7f7f8;
-            --input-bg: #ffffff;
-            --shadow: rgba(0, 0, 0, 0.05);
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --accent-primary: #58a6ff;
+            --accent-secondary: #1f6feb;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
         }
         
-        [data-theme="dark"] {
-            --bg-primary: #343541;
-            --bg-secondary: #444654;
-            --bg-sidebar: #202123;
-            --text-primary: #ececf1;
-            --text-secondary: #c5c5d2;
-            --border-color: #565869;
-            --user-msg-bg: #343541;
-            --assistant-msg-bg: #444654;
-            --accent-color: #10a37f;
-            --hover-bg: #2a2b32;
-            --input-bg: #40414f;
-            --shadow: rgba(0, 0, 0, 0.3);
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f6f8fa;
+            --bg-tertiary: #ffffff;
+            --border-color: #d0d7de;
+            --text-primary: #1f2328;
+            --text-secondary: #656d76;
+            --accent-primary: #0969da;
+            --accent-secondary: #0550ae;
         }
         
         [data-theme="blue"] {
-            --bg-primary: #f0f4ff;
-            --bg-secondary: #e6eeff;
-            --bg-sidebar: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #cbd5e1;
-            --user-msg-bg: #e0e7ff;
-            --assistant-msg-bg: #f0f4ff;
-            --accent-color: #3b82f6;
-            --hover-bg: #e0e7ff;
-            --input-bg: #ffffff;
-            --shadow: rgba(59, 130, 246, 0.1);
+            --bg-primary: #0a1929;
+            --bg-secondary: #132f4c;
+            --bg-tertiary: #1a4971;
+            --border-color: #1e4976;
+            --text-primary: #e6f4ff;
+            --text-secondary: #8cb4d9;
+            --accent-primary: #4fc3f7;
+            --accent-secondary: #29b6f6;
         }
         
         [data-theme="purple"] {
-            --bg-primary: #faf5ff;
-            --bg-secondary: #f3e8ff;
-            --bg-sidebar: #ffffff;
-            --text-primary: #2d1b4e;
-            --text-secondary: #7c3aed;
-            --border-color: #e9d5ff;
-            --user-msg-bg: #f3e8ff;
-            --assistant-msg-bg: #faf5ff;
-            --accent-color: #8b5cf6;
-            --hover-bg: #f3e8ff;
-            --input-bg: #ffffff;
-            --shadow: rgba(139, 92, 246, 0.1);
+            --bg-primary: #1a0b2e;
+            --bg-secondary: #2d1b4e;
+            --bg-tertiary: #3e2a5f;
+            --border-color: #4a3268;
+            --text-primary: #f3e6ff;
+            --text-secondary: #b794c8;
+            --accent-primary: #b388ff;
+            --accent-secondary: #9c27b0;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-secondary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
             color: var(--text-primary);
-            transition: all 0.3s ease;
             height: 100vh;
             overflow: hidden;
+            transition: all 0.3s ease;
         }
         
         .app-container {
@@ -92,49 +83,81 @@
         
         /* Sidebar */
         .sidebar {
-            width: 260px;
-            background: var(--bg-sidebar);
+            width: 280px;
+            background: var(--bg-secondary);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .sidebar-header {
-            padding: 12px;
+            padding: 20px;
             border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .new-chat-btn {
             width: 100%;
             padding: 12px 16px;
-            background: var(--accent-color);
-            border: none;
+            background: var(--accent-primary);
+            border: 1px solid var(--accent-secondary);
             color: white;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             font-size: 14px;
             font-weight: 600;
             transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
         
         .new-chat-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
         
         .sidebar-content {
             flex: 1;
             overflow-y: auto;
-            padding: 8px;
+            padding: 12px;
+        }
+        
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
         }
         
         .nav-item {
-            padding: 12px 16px;
-            margin: 4px 0;
+            padding: 10px 12px;
+            margin: 2px 0;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
@@ -143,55 +166,70 @@
             color: var(--text-primary);
             font-size: 14px;
             transition: all 0.2s;
-        }
-        
-        .nav-item:hover, .nav-item.active {
-            background: var(--hover-bg);
-        }
-        
-        .nav-item.active {
-            font-weight: 600;
-        }
-        
-        .sidebar-footer {
-            padding: 12px;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .theme-selector {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .theme-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s;
             position: relative;
         }
         
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .nav-item.active {
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background: var(--accent-primary);
+            border-radius: 0 3px 3px 0;
+        }
+        
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+        
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .theme-btn {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 11px;
+            transition: all 0.2s;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
         .theme-btn:hover {
-            transform: scale(1.1);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
         }
         
         .theme-btn.active {
-            border-color: var(--accent-color);
-            border-width: 3px;
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
         }
-        
-        .theme-btn.light { background: linear-gradient(135deg, #fff, #f0f0f0); }
-        .theme-btn.dark { background: linear-gradient(135deg, #2d2d2d, #1a1a1a); }
-        .theme-btn.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .theme-btn.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
         
         .sound-toggle {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px;
             background: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-primary);
@@ -200,12 +238,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.2s;
         }
         
         .sound-toggle:hover {
-            background: var(--hover-bg);
+            background: var(--bg-secondary);
+            border-color: var(--accent-primary);
         }
         
         /* Main Content */
@@ -224,7 +263,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--bg-primary);
+            background: var(--bg-secondary);
+            backdrop-filter: blur(10px);
             flex-shrink: 0;
         }
         
@@ -235,6 +275,33 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--success);
+            margin-left: 12px;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         .menu-toggle {
@@ -269,7 +336,9 @@
         }
         
         .header-btn:hover {
-            background: var(--hover-bg);
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
         }
         
         /* Chat Section */
@@ -292,7 +361,7 @@
         }
         
         .messages-wrapper {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 24px;
             min-height: 100%;
@@ -300,28 +369,40 @@
         
         /* Suggestions */
         .suggestions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 40px 0;
         }
         
         .suggestion-btn {
-            padding: 10px 16px;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 20px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 12px;
             cursor: pointer;
             font-size: 13px;
-            transition: all 0.2s;
-            white-space: nowrap;
+            transition: all 0.3s;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         
         .suggestion-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .suggestion-icon {
+            font-size: 24px;
+        }
+        
+        .suggestion-text {
+            font-weight: 600;
         }
         
         .message {
@@ -338,41 +419,48 @@
         }
         
         .message.user {
-            background: var(--user-msg-bg);
+            background: transparent;
         }
         
         .message.assistant {
-            background: var(--assistant-msg-bg);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+            background: transparent;
         }
         
         .message-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 4px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
             flex-shrink: 0;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
         
         .message.user .message-avatar {
-            background: var(--accent-color);
-            color: white;
+            background: var(--gradient-2);
         }
         
         .message.assistant .message-avatar {
-            background: var(--accent-color);
+            background: var(--gradient-1);
         }
         
         .message-content {
             flex: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
             color: var(--text-primary);
             line-height: 1.6;
             font-size: 15px;
             word-wrap: break-word;
+        }
+        
+        .message.user .message-content {
+            background: var(--bg-tertiary);
         }
         
         .message-actions {
@@ -391,18 +479,19 @@
         
         .copy-btn {
             padding: 6px 10px;
-            background: var(--hover-bg);
+            background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.2s;
+            color: var(--text-primary);
         }
         
         .copy-btn:hover {
-            background: var(--accent-color);
+            background: var(--accent-primary);
             color: white;
-            border-color: var(--accent-color);
+            border-color: var(--accent-primary);
         }
         
         /* Markdown Styling */
@@ -416,41 +505,26 @@
         }
         
         .message-content code {
-            background: var(--hover-bg);
+            background: var(--bg-tertiary);
             padding: 2px 6px;
             border-radius: 4px;
-            font-family: 'Courier New', monospace;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
             font-size: 0.9em;
         }
         
         .message-content pre {
-            background: #1e1e1e;
+            background: #0d1117;
             padding: 16px;
             border-radius: 8px;
             overflow-x: auto;
             margin: 12px 0;
-            position: relative;
+            border: 1px solid var(--border-color);
         }
         
         .message-content pre code {
             background: none;
             padding: 0;
-            color: #d4d4d4;
-        }
-        
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: #2d2d2d;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: -12px;
-        }
-        
-        .code-lang {
-            font-size: 12px;
-            color: #888;
+            color: #e6edf3;
         }
         
         .message-content ul, .message-content ol {
@@ -463,14 +537,14 @@
         }
         
         .message-content blockquote {
-            border-left: 4px solid var(--accent-color);
+            border-left: 4px solid var(--accent-primary);
             padding-left: 16px;
             margin: 12px 0;
             color: var(--text-secondary);
         }
         
         .message-content a {
-            color: var(--accent-color);
+            color: var(--accent-primary);
             text-decoration: none;
         }
         
@@ -478,28 +552,10 @@
             text-decoration: underline;
         }
         
-        /* Typing Effect */
-        .typing-cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1em;
-            background: var(--accent-color);
-            margin-left: 2px;
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-        
         /* Typing Indicator */
         .typing-indicator {
             display: none;
             padding: 24px 0;
-            background: var(--assistant-msg-bg);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
         }
         
         .typing-indicator.active {
@@ -509,9 +565,6 @@
         .typing-dots {
             display: flex;
             gap: 4px;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 24px;
         }
         
         .typing-dots span {
@@ -534,12 +587,13 @@
         .input-container {
             padding: 16px 24px 24px;
             border-top: 1px solid var(--border-color);
-            background: var(--bg-primary);
+            background: var(--bg-secondary);
+            backdrop-filter: blur(10px);
             flex-shrink: 0;
         }
         
         .input-wrapper {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             position: relative;
         }
@@ -547,8 +601,8 @@
         .chat-input {
             width: 100%;
             padding: 14px 90px 14px 16px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 15px;
@@ -561,8 +615,8 @@
         }
         
         .chat-input:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
         }
         
         .input-actions {
@@ -576,10 +630,10 @@
         .mic-btn, .send-btn {
             width: 32px;
             height: 32px;
-            background: var(--accent-color);
-            border: none;
+            background: transparent;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: white;
+            color: var(--text-primary);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -587,29 +641,27 @@
             transition: all 0.2s;
         }
         
-        .mic-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-        
         .mic-btn:hover {
-            background: var(--hover-bg);
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
         }
         
         .mic-btn.recording {
-            background: #ef4444;
+            background: var(--danger);
+            border-color: var(--danger);
             color: white;
             animation: pulse 1.5s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        .send-btn {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
         }
         
         .send-btn:hover:not(:disabled) {
-            background: #0e8c6d;
+            background: var(--accent-secondary);
         }
         
         .send-btn:disabled {
@@ -629,15 +681,76 @@
             display: block;
         }
         
+        .section-header {
+            max-width: 900px;
+            margin: 0 auto 32px;
+        }
+        
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .section-description {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        .cards-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .card-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 4px;
+        }
+        
+        .card-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
-                left: -260px;
+                left: -280px;
                 height: 100%;
                 z-index: 1000;
                 transition: left 0.3s;
-                box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+                box-shadow: var(--shadow-lg);
             }
             
             .sidebar.open {
@@ -661,15 +774,7 @@
             }
             
             .suggestions {
-                flex-direction: column;
-            }
-            
-            .suggestion-btn {
-                width: 100%;
-            }
-            
-            .theme-selector {
-                justify-content: space-between;
+                grid-template-columns: 1fr;
             }
             
             .chat-header h1 {
@@ -679,6 +784,10 @@
             .header-btn {
                 padding: 6px 10px;
                 font-size: 12px;
+            }
+            
+            .status-badge {
+                display: none;
             }
         }
         
@@ -690,8 +799,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 999;
+            backdrop-filter: blur(4px);
         }
         
         .sidebar-overlay.active {
@@ -700,16 +810,16 @@
         
         /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
         
         ::-webkit-scrollbar-track {
-            background: transparent;
+            background: var(--bg-primary);
         }
         
         ::-webkit-scrollbar-thumb {
             background: var(--border-color);
-            border-radius: 4px;
+            border-radius: 5px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
@@ -721,11 +831,12 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: var(--accent-color);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
             z-index: 2000;
             animation: slideInRight 0.3s ease-out;
         }
@@ -738,12 +849,15 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Overlay pour mobile -->
         <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
         
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
+                <div class="logo">
+                    <span>🤖</span>
+                    <span>Jedidja</span>
+                </div>
                 <button class="new-chat-btn" onclick="newChat()">
                     <span>➕</span>
                     <span>Nouvelle conversation</span>
@@ -751,31 +865,34 @@
             </div>
             
             <div class="sidebar-content">
-                <div class="nav-item active" onclick="showSection('chat')">
-                    <span>💬</span>
-                    <span>Chat</span>
-                </div>
-                <div class="nav-item" onclick="showSection('notes')">
-                    <span>📝</span>
-                    <span>Notes</span>
-                </div>
-                <div class="nav-item" onclick="showSection('reminders')">
-                    <span>⏰</span>
-                    <span>Rappels</span>
-                </div>
-                <div class="nav-item" onclick="showSection('stats')">
-                    <span>📊</span>
-                    <span>Statistiques</span>
+                <div class="nav-section">
+                    <div class="nav-section-title">Navigation</div>
+                    <div class="nav-item active" onclick="showSection('chat')">
+                        <span>💬</span>
+                        <span>Chat</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('notes')">
+                        <span>📝</span>
+                        <span>Notes</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('reminders')">
+                        <span>⏰</span>
+                        <span>Rappels</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('stats')">
+                        <span>📊</span>
+                        <span>Statistiques</span>
+                    </div>
                 </div>
             </div>
             
             <div class="sidebar-footer">
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; padding: 0 4px;">Thèmes</div>
+                <div class="nav-section-title">Thèmes</div>
                 <div class="theme-selector">
-                    <div class="theme-btn light active" onclick="setTheme('light')" title="Clair"></div>
-                    <div class="theme-btn dark" onclick="setTheme('dark')" title="Sombre"></div>
-                    <div class="theme-btn blue" onclick="setTheme('blue')" title="Bleu"></div>
-                    <div class="theme-btn purple" onclick="setTheme('purple')" title="Violet"></div>
+                    <div class="theme-btn active" onclick="setTheme('dark')">🌙 Sombre</div>
+                    <div class="theme-btn" onclick="setTheme('light')">☀️ Clair</div>
+                    <div class="theme-btn" onclick="setTheme('blue')">🌊 Bleu</div>
+                    <div class="theme-btn" onclick="setTheme('purple')">🎨 Violet</div>
                 </div>
                 <button class="sound-toggle" onclick="toggleSound()">
                     <span>🔊 Sons</span>
@@ -793,6 +910,10 @@
                         <span>🤖</span>
                         <span>Jedidja</span>
                     </h1>
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>En ligne</span>
+                    </div>
                 </div>
                 <div class="header-actions">
                     <button class="header-btn" onclick="clearChat()">🗑️ Effacer</button>
@@ -805,17 +926,28 @@
                 <div class="chat-messages-container" id="chat-container">
                     <div class="messages-wrapper" id="messages">
                         <div class="suggestions" id="suggestions">
-                            <button class="suggestion-btn" onclick="useSuggestion(this)">💡 Explique-moi un concept</button>
-                            <button class="suggestion-btn" onclick="useSuggestion(this)">💻 Aide-moi à coder</button>
-                            <button class="suggestion-btn" onclick="useSuggestion(this)">✨ Sois créatif</button>
-                            <button class="suggestion-btn" onclick="useSuggestion(this)">📚 Apprends-moi quelque chose</button>
+                            <button class="suggestion-btn" onclick="useSuggestion(this)">
+                                <span class="suggestion-icon">💡</span>
+                                <span class="suggestion-text">Explique-moi un concept</span>
+                            </button>
+                            <button class="suggestion-btn" onclick="useSuggestion(this)">
+                                <span class="suggestion-icon">💻</span>
+                                <span class="suggestion-text">Aide-moi à coder</span>
+                            </button>
+                            <button class="suggestion-btn" onclick="useSuggestion(this)">
+                                <span class="suggestion-icon">✨</span>
+                                <span class="suggestion-text">Sois créatif</span>
+                            </button>
+                            <button class="suggestion-btn" onclick="useSuggestion(this)">
+                                <span class="suggestion-icon">📚</span>
+                                <span class="suggestion-text">Apprends-moi quelque chose</span>
+                            </button>
                         </div>
                         
                         <div class="message assistant">
                             <div class="message-avatar">🤖</div>
                             <div class="message-content">
                                 <p>Bonjour ! Je suis <strong>Jedidja</strong>, ton assistant IA de nouvelle génération. 🚀</p>
-                                <p>J'ai été créé par <strong>Jedidja-SROVI</strong>, un développeur passionné, avec pour mission de rendre l'intelligence artificielle accessible et utile à tous.</p>
                                 <p>Voici ce que je peux faire pour toi :</p>
                                 <ul>
                                     <li>💬 Converser naturellement sur n'importe quel sujet</li>
@@ -830,10 +962,13 @@
                     </div>
                     
                     <div class="typing-indicator" id="typing">
-                        <div class="typing-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                        <div class="message">
+                            <div class="message-avatar">🤖</div>
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -861,49 +996,58 @@
             
             <!-- Notes Section -->
             <div id="notes-section" class="section-content">
-                <h2 style="font-size: 24px; margin-bottom: 24px;">📝 Mes Notes</h2>
-                <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                    <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Ajouter une note</div>
-                    <textarea id="note-input" rows="3" placeholder="Écris ta note ici..." style="width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px; font-family: inherit;"></textarea>
-                    <button onclick="addNote()" style="padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Ajouter</button>
+                <div class="section-header">
+                    <h1 class="section-title">📝 Mes Notes</h1>
+                    <p class="section-description">Garde une trace de tes idées importantes</p>
                 </div>
-                <div id="notes-list"></div>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Nouvelle note</div>
+                        <textarea id="note-input" rows="3" placeholder="Écris ta note ici..." style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin: 12px 0; font-family: inherit; resize: vertical;"></textarea>
+                        <button onclick="addNote()" style="width: 100%; padding: 10px 20px; background: var(--accent-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Ajouter</button>
+                    </div>
+                </div>
+                <div id="notes-list" style="max-width: 900px; margin: 24px auto 0;"></div>
             </div>
             
             <!-- Reminders Section -->
             <div id="reminders-section" class="section-content">
-                <h2 style="font-size: 24px; margin-bottom: 24px;">⏰ Mes Rappels</h2>
-                <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                    <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Créer un rappel</div>
-                    <input type="number" id="reminder-minutes" min="1" value="5" placeholder="Minutes" style="width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px;">
-                    <input type="text" id="reminder-message" placeholder="Message du rappel" style="width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px;">
-                    <button onclick="addReminder()" style="padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Créer</button>
+                <div class="section-header">
+                    <h1 class="section-title">⏰ Mes Rappels</h1>
+                    <p class="section-description">Ne manque plus jamais rien d'important</p>
                 </div>
-                <div id="reminders-list"></div>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Créer un rappel</div>
+                        <input type="number" id="reminder-minutes" min="1" value="5" placeholder="Minutes" style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin: 12px 0;">
+                        <input type="text" id="reminder-message" placeholder="Message du rappel" style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px;">
+                        <button onclick="addReminder()" style="width: 100%; padding: 10px 20px; background: var(--accent-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Créer</button>
+                    </div>
+                </div>
+                <div id="reminders-list" style="max-width: 900px; margin: 24px auto 0;"></div>
             </div>
             
             <!-- Stats Section -->
             <div id="stats-section" class="section-content">
-                <h2 style="font-size: 24px; margin-bottom: 24px;">📊 Statistiques</h2>
-                <div style="background: rgba(16, 163, 127, 0.1); border: 1px solid rgba(16, 163, 127, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px; line-height: 1.5;">
-                    <strong>Utilisation de Jedidja</strong><br>
-                    <small>Voici un résumé de ton activité avec l'assistant.</small>
+                <div class="section-header">
+                    <h1 class="section-title">📊 Statistiques</h1>
+                    <p class="section-description">Visualise ton activité avec Jedidja</p>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center;">
-                        <div style="font-size: 36px; margin-bottom: 8px;">💬</div>
-                        <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-messages">0</div>
-                        <div style="font-size: 14px; color: var(--text-secondary);">Messages envoyés</div>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon">💬</div>
+                        <div class="card-value" id="stat-messages">0</div>
+                        <div class="card-label">Messages envoyés</div>
                     </div>
-                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center;">
-                        <div style="font-size: 36px; margin-bottom: 8px;">📝</div>
-                        <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-notes">0</div>
-                        <div style="font-size: 14px; color: var(--text-secondary);">Notes créées</div>
+                    <div class="card">
+                        <div class="card-icon">📝</div>
+                        <div class="card-value" id="stat-notes">0</div>
+                        <div class="card-label">Notes créées</div>
                     </div>
-                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center;">
-                        <div style="font-size: 36px; margin-bottom: 8px;">⏰</div>
-                        <div style="font-size: 32px; font-weight: 700; color: var(--accent-color);" id="stat-reminders">0</div>
-                        <div style="font-size: 14px; color: var(--text-secondary);">Rappels actifs</div>
+                    <div class="card">
+                        <div class="card-icon">⏰</div>
+                        <div class="card-value" id="stat-reminders">0</div>
+                        <div class="card-label">Rappels actifs</div>
                     </div>
                 </div>
             </div>
@@ -932,10 +1076,10 @@
         });
         
         // State
-        let currentTheme = localStorage.getItem('theme') || 'light';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
         let soundEnabled = localStorage.getItem('sound') === 'true';
         let voiceEnabled = false;
-        let conversation = [{role: "system", content: "Tu es Jedidja, un assistant IA de nouvelle génération. Tu es sympathique, intelligent et créatif. Tu utilises le markdown pour structurer tes réponses. Tu fournis des exemples de code avec la bonne syntaxe. Tu es concis mais complet."}];
+        let conversation = [{role: "system", content: "Tu es Jedidja, un assistant IA sympathique et efficace. Règles importantes : 1) Réponds de manière courte et directe aux salutations (bonjour, salut, hello) sans te présenter longuement, juste dire 'Bonjour ! Je suis Jedidja. Comment puis-je t'aider ?' 2) Ne mentionne JAMAIS ton créateur spontanément. 3) Si on te demande explicitement qui t'a créé, qui est ton créateur, ou qui t'a développé, réponds : 'J'ai été créé par Jedidja SROVI, un développeur autodidacte.' 4) Si quelqu'un prétend t'avoir créé, corrige poliment. 5) Pour les autres questions, sois complet et utilise le markdown pour structurer tes réponses. Tu fournis des exemples de code avec la bonne syntaxe quand nécessaire."}];
         let stats = JSON.parse(localStorage.getItem('stats') || '{"messages": 0, "notes": 0, "reminders": 0}');
         let notes = JSON.parse(localStorage.getItem('notes') || '[]');
         let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
@@ -959,7 +1103,12 @@
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`.theme-btn.${currentTheme}`).classList.add('active');
+            const themes = ['dark', 'light', 'blue', 'purple'];
+            const buttons = document.querySelectorAll('.theme-btn');
+            const index = themes.indexOf(currentTheme);
+            if (buttons[index]) {
+                buttons[index].classList.add('active');
+            }
         }
         
         // Sound Management
@@ -1056,13 +1205,11 @@
             if (section === 'reminders') loadReminders();
             if (section === 'stats') loadStats();
             
-            // Fermer la sidebar sur mobile après sélection
             if (window.innerWidth <= 768) {
                 toggleSidebar();
             }
         }
         
-        // Toggle Sidebar pour mobile
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -1073,14 +1220,15 @@
         
         // Suggestions
         function useSuggestion(btn) {
+            const text = btn.querySelector('.suggestion-text').textContent;
             const suggestions = {
-                '💡 Explique-moi un concept': 'Peux-tu m\'expliquer un concept complexe de manière simple ?',
-                '💻 Aide-moi à coder': 'J\'ai besoin d\'aide pour coder quelque chose. Peux-tu m\'aider ?',
-                '✨ Sois créatif': 'Écris-moi quelque chose de créatif et original !',
-                '📚 Apprends-moi quelque chose': 'Apprends-moi quelque chose d\'intéressant que je ne savais pas !'
+                'Explique-moi un concept': 'Peux-tu m\'expliquer un concept complexe de manière simple ?',
+                'Aide-moi à coder': 'J\'ai besoin d\'aide pour coder quelque chose. Peux-tu m\'aider ?',
+                'Sois créatif': 'Écris-moi quelque chose de créatif et original !',
+                'Apprends-moi quelque chose': 'Apprends-moi quelque chose d\'intéressant que je ne savais pas !'
             };
             
-            const message = suggestions[btn.textContent] || btn.textContent;
+            const message = suggestions[text] || text;
             document.getElementById('input').value = message;
             document.getElementById('suggestions').style.display = 'none';
             sendMessage();
@@ -1155,10 +1303,8 @@
             const contentDiv = document.getElementById(messageId);
             
             if (withTyping && type === 'assistant') {
-                // Typing effect
                 await typeMessage(contentDiv, content);
             } else {
-                // Instant display with markdown
                 if (type === 'assistant') {
                     contentDiv.innerHTML = marked.parse(content);
                     contentDiv.querySelectorAll('pre code').forEach((block) => {
@@ -1176,20 +1322,18 @@
             const html = marked.parse(text);
             element.innerHTML = '';
             
-            // Pour l'effet de frappe, on affiche le texte progressivement
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
             const textContent = tempDiv.textContent;
             
-            const speed = 20; // ms par caractère
+            const speed = 20;
             
             for (let i = 0; i < textContent.length; i++) {
                 element.textContent = textContent.substring(0, i + 1);
-                if (i % 5 === 0) scrollToBottom(); // Scroll tous les 5 caractères
+                if (i % 5 === 0) scrollToBottom();
                 await new Promise(resolve => setTimeout(resolve, speed));
             }
             
-            // Afficher le HTML final avec markdown
             element.innerHTML = html;
             element.querySelectorAll('pre code').forEach((block) => {
                 hljs.highlightElement(block);
@@ -1222,10 +1366,22 @@
             conversation = [conversation[0]];
             document.getElementById('messages').innerHTML = `
                 <div class="suggestions" id="suggestions">
-                    <button class="suggestion-btn" onclick="useSuggestion(this)">💡 Explique-moi un concept</button>
-                    <button class="suggestion-btn" onclick="useSuggestion(this)">💻 Aide-moi à coder</button>
-                    <button class="suggestion-btn" onclick="useSuggestion(this)">✨ Sois créatif</button>
-                    <button class="suggestion-btn" onclick="useSuggestion(this)">📚 Apprends-moi quelque chose</button>
+                    <button class="suggestion-btn" onclick="useSuggestion(this)">
+                        <span class="suggestion-icon">💡</span>
+                        <span class="suggestion-text">Explique-moi un concept</span>
+                    </button>
+                    <button class="suggestion-btn" onclick="useSuggestion(this)">
+                        <span class="suggestion-icon">💻</span>
+                        <span class="suggestion-text">Aide-moi à coder</span>
+                    </button>
+                    <button class="suggestion-btn" onclick="useSuggestion(this)">
+                        <span class="suggestion-icon">✨</span>
+                        <span class="suggestion-text">Sois créatif</span>
+                    </button>
+                    <button class="suggestion-btn" onclick="useSuggestion(this)">
+                        <span class="suggestion-icon">📚</span>
+                        <span class="suggestion-text">Apprends-moi quelque chose</span>
+                    </button>
                 </div>
                 <div class="message assistant">
                     <div class="message-avatar">🤖</div>
@@ -1265,17 +1421,18 @@
         
         function loadNotes() {
             const list = document.getElementById('notes-list');
-            list.innerHTML = notes.length === 0 ? '<div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center; color: var(--text-secondary);">Aucune note pour le moment</div>' : '';
+            list.innerHTML = notes.length === 0 ? '<div class="card" style="text-align: center; color: var(--text-secondary);">Aucune note pour le moment</div>' : '';
             notes.forEach(note => {
                 const div = document.createElement('div');
-                div.style.cssText = 'background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;';
+                div.className = 'card';
+                div.style.marginBottom = '16px';
                 div.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div style="flex: 1;">
                             <div style="margin-bottom: 8px;">${note.text}</div>
                             <div style="font-size: 12px; color: var(--text-secondary);">${note.timestamp}</div>
                         </div>
-                        <button onclick="deleteNote(${note.id})" style="padding: 6px 10px; background: transparent; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; transition: all 0.2s;">🗑️</button>
+                        <button onclick="deleteNote(${note.id})" class="copy-btn">🗑️</button>
                     </div>
                 `;
                 list.appendChild(div);
@@ -1326,17 +1483,18 @@
         
         function loadReminders() {
             const list = document.getElementById('reminders-list');
-            list.innerHTML = reminders.length === 0 ? '<div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center; color: var(--text-secondary);">Aucun rappel actif</div>' : '';
+            list.innerHTML = reminders.length === 0 ? '<div class="card" style="text-align: center; color: var(--text-secondary);">Aucun rappel actif</div>' : '';
             reminders.forEach(reminder => {
                 const div = document.createElement('div');
-                div.style.cssText = 'background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;';
+                div.className = 'card';
+                div.style.marginBottom = '16px';
                 div.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div style="flex: 1;">
                             <div style="font-weight: 600; margin-bottom: 8px;">⏰ ${reminder.message}</div>
                             <div style="font-size: 14px; color: var(--text-secondary);">Dans ${reminder.minutes} minute(s) • ${reminder.time}</div>
                         </div>
-                        <button onclick="deleteReminder(${reminder.id})" style="padding: 6px 10px; background: transparent; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer;">🗑️</button>
+                        <button onclick="deleteReminder(${reminder.id})" class="copy-btn">🗑️</button>
                     </div>
                 `;
                 list.appendChild(div);
@@ -1393,3 +1551,4 @@
     </script>
 </body>
 </html>
+                
