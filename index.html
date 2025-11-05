@@ -2,9 +2,12 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="description" content="Jedidja - Assistant IA">
-    <meta name="theme-color" content="#343541">
+    <meta name="theme-color" content="#0d1117">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
     <title>Jedidja - Assistant IA</title>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -12,7 +15,107 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeOut 0.5s ease-out 2.5s forwards;
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+        
+        .loading-logo {
+            font-size: 80px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .loading-text {
+            margin-top: 24px;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .loading-subtitle {
+            margin-top: 12px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            animation: fadeInUp 0.6s ease-out 0.6s both;
+        }
+        
+        .loading-spinner {
+            margin-top: 40px;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite, fadeInUp 0.6s ease-out 0.9s both;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-progress {
+            margin-top: 30px;
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out 1.2s both;
+        }
+        
+        .loading-progress-bar {
+            width: 0;
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            animation: progress 2s ease-out forwards;
+        }
+        
+        @keyframes progress {
+            to { width: 100%; }
+        }
         
         :root {
             --bg-primary: #0d1117;
@@ -32,6 +135,8 @@
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
             --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
         
         [data-theme="light"] {
@@ -67,21 +172,31 @@
             --accent-secondary: #9c27b0;
         }
         
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            height: 100vh;
-            overflow: hidden;
             transition: all 0.3s ease;
+            touch-action: pan-y;
         }
         
         .app-container {
             display: flex;
             height: 100vh;
+            height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+            position: relative;
+            overflow: hidden;
         }
         
-        /* Sidebar */
+        /* Sidebar - Optimisé mobile */
         .sidebar {
             width: 280px;
             background: var(--bg-secondary);
@@ -89,11 +204,14 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 100;
         }
         
         .sidebar-header {
             padding: 20px;
+            padding-top: calc(20px + var(--safe-area-inset-top));
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-tertiary);
         }
@@ -113,7 +231,7 @@
         
         .new-chat-btn {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 16px;
             background: var(--accent-primary);
             border: 1px solid var(--accent-secondary);
             color: white;
@@ -127,18 +245,19 @@
             font-weight: 600;
             transition: all 0.2s;
             box-shadow: var(--shadow-sm);
+            min-height: 44px; /* Taille minimale pour touch iOS */
         }
         
-        .new-chat-btn:hover {
-            background: var(--accent-secondary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .new-chat-btn:active {
+            transform: scale(0.98);
         }
         
         .sidebar-content {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 12px;
+            -webkit-overflow-scrolling: touch;
         }
         
         .nav-section {
@@ -156,7 +275,7 @@
         }
         
         .nav-item {
-            padding: 10px 12px;
+            padding: 12px 14px;
             margin: 2px 0;
             border-radius: 8px;
             cursor: pointer;
@@ -164,9 +283,14 @@
             align-items: center;
             gap: 12px;
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 15px;
             transition: all 0.2s;
             position: relative;
+            min-height: 44px;
+        }
+        
+        .nav-item:active {
+            transform: scale(0.98);
         }
         
         .nav-item:hover {
@@ -193,6 +317,7 @@
         
         .sidebar-footer {
             padding: 16px;
+            padding-bottom: calc(16px + var(--safe-area-inset-bottom));
             border-top: 1px solid var(--border-color);
             background: var(--bg-tertiary);
         }
@@ -205,20 +330,23 @@
         }
         
         .theme-btn {
-            padding: 8px;
+            padding: 10px 8px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             text-align: center;
-            font-size: 11px;
+            font-size: 12px;
             transition: all 0.2s;
             background: var(--bg-secondary);
             color: var(--text-primary);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .theme-btn:hover {
-            border-color: var(--accent-primary);
-            transform: translateY(-2px);
+        .theme-btn:active {
+            transform: scale(0.95);
         }
         
         .theme-btn.active {
@@ -229,7 +357,7 @@
         
         .sound-toggle {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-primary);
@@ -238,13 +366,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 13px;
+            font-size: 14px;
             transition: all 0.2s;
+            min-height: 44px;
         }
         
-        .sound-toggle:hover {
-            background: var(--bg-secondary);
-            border-color: var(--accent-primary);
+        .sound-toggle:active {
+            transform: scale(0.98);
         }
         
         /* Main Content */
@@ -254,11 +382,12 @@
             flex-direction: column;
             background: var(--bg-primary);
             overflow: hidden;
-            height: 100vh;
+            height: 100%;
         }
         
         .chat-header {
-            padding: 16px 24px;
+            padding: 16px 20px;
+            padding-top: calc(16px + var(--safe-area-inset-top));
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
@@ -306,8 +435,8 @@
         
         .menu-toggle {
             display: none;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             background: transparent;
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -317,6 +446,11 @@
             font-size: 20px;
             color: var(--text-primary);
             margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .menu-toggle:active {
+            transform: scale(0.95);
         }
         
         .header-actions {
@@ -325,20 +459,22 @@
         }
         
         .header-btn {
-            padding: 8px 12px;
+            padding: 10px 14px;
             background: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             transition: all 0.2s;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
         }
         
-        .header-btn:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
+        .header-btn:active {
+            transform: scale(0.95);
         }
         
         /* Chat Section */
@@ -348,6 +484,7 @@
             flex: 1;
             overflow: hidden;
             position: relative;
+            height: 100%;
         }
         
         .chat-section.active {
@@ -358,21 +495,23 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
         
         .messages-wrapper {
             max-width: 900px;
             margin: 0 auto;
-            padding: 24px;
+            padding: 20px 16px;
             min-height: 100%;
         }
         
-        /* Suggestions */
+        /* Suggestions - Optimisé mobile */
         .suggestions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 1fr;
             gap: 12px;
-            margin: 40px 0;
+            margin: 20px 0;
         }
         
         .suggestion-btn {
@@ -382,19 +521,18 @@
             color: var(--text-primary);
             border-radius: 12px;
             cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
+            font-size: 14px;
+            transition: all 0.2s;
             text-align: left;
             display: flex;
             flex-direction: column;
             gap: 8px;
+            min-height: 60px;
         }
         
-        .suggestion-btn:hover {
+        .suggestion-btn:active {
+            transform: scale(0.98);
             background: var(--bg-tertiary);
-            border-color: var(--accent-primary);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
         }
         
         .suggestion-icon {
@@ -407,8 +545,8 @@
         
         .message {
             display: flex;
-            gap: 16px;
-            padding: 24px 0;
+            gap: 12px;
+            padding: 16px 0;
             animation: slideIn 0.3s ease-out;
             position: relative;
         }
@@ -416,14 +554,6 @@
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .message.user {
-            background: transparent;
-        }
-        
-        .message.assistant {
-            background: transparent;
         }
         
         .message-avatar {
@@ -452,11 +582,13 @@
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             color: var(--text-primary);
             line-height: 1.6;
             font-size: 15px;
             word-wrap: break-word;
+            overflow-wrap: break-word;
+            min-width: 0;
         }
         
         .message.user .message-content {
@@ -464,40 +596,33 @@
         }
         
         .message-actions {
-            position: absolute;
-            top: 24px;
-            right: 24px;
             display: flex;
             gap: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .message:hover .message-actions {
-            opacity: 1;
+            margin-top: 8px;
+            flex-wrap: wrap;
         }
         
         .copy-btn {
-            padding: 6px 10px;
+            padding: 8px 12px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.2s;
             color: var(--text-primary);
+            min-height: 36px;
         }
         
-        .copy-btn:hover {
-            background: var(--accent-primary);
-            color: white;
-            border-color: var(--accent-primary);
+        .copy-btn:active {
+            transform: scale(0.95);
         }
         
-        /* Markdown Styling */
+        /* Markdown Styling - Optimisé mobile */
         .message-content h1, .message-content h2, .message-content h3 {
-            margin: 16px 0 8px;
+            margin: 12px 0 8px;
             font-weight: 600;
+            font-size: 1.1em;
         }
         
         .message-content p {
@@ -510,26 +635,29 @@
             border-radius: 4px;
             font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
             font-size: 0.9em;
+            word-break: break-all;
         }
         
         .message-content pre {
             background: #0d1117;
-            padding: 16px;
+            padding: 12px;
             border-radius: 8px;
             overflow-x: auto;
             margin: 12px 0;
             border: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
         }
         
         .message-content pre code {
             background: none;
             padding: 0;
             color: #e6edf3;
+            word-break: normal;
         }
         
         .message-content ul, .message-content ol {
             margin: 8px 0;
-            padding-left: 24px;
+            padding-left: 20px;
         }
         
         .message-content li {
@@ -538,7 +666,7 @@
         
         .message-content blockquote {
             border-left: 4px solid var(--accent-primary);
-            padding-left: 16px;
+            padding-left: 12px;
             margin: 12px 0;
             color: var(--text-secondary);
         }
@@ -546,16 +674,13 @@
         .message-content a {
             color: var(--accent-primary);
             text-decoration: none;
-        }
-        
-        .message-content a:hover {
-            text-decoration: underline;
+            word-break: break-all;
         }
         
         /* Typing Indicator */
         .typing-indicator {
             display: none;
-            padding: 24px 0;
+            padding: 16px 0;
         }
         
         .typing-indicator.active {
@@ -565,6 +690,7 @@
         .typing-dots {
             display: flex;
             gap: 4px;
+            padding-left: 48px;
         }
         
         .typing-dots span {
@@ -583,9 +709,10 @@
             30% { transform: translateY(-8px); opacity: 1; }
         }
         
-        /* Input Area */
+        /* Input Area - Optimisé mobile */
         .input-container {
-            padding: 16px 24px 24px;
+            padding: 12px 16px;
+            padding-bottom: calc(12px + var(--safe-area-inset-bottom));
             border-top: 1px solid var(--border-color);
             background: var(--bg-secondary);
             backdrop-filter: blur(10px);
@@ -600,58 +727,56 @@
         
         .chat-input {
             width: 100%;
-            padding: 14px 90px 14px 16px;
+            padding: 14px 80px 14px 14px;
             background: var(--bg-primary);
             border: 2px solid var(--border-color);
             border-radius: 12px;
             color: var(--text-primary);
-            font-size: 15px;
+            font-size: 16px; /* 16px pour éviter le zoom sur iOS */
             outline: none;
             resize: none;
-            min-height: 52px;
-            max-height: 200px;
+            min-height: 50px;
+            max-height: 150px;
             font-family: inherit;
             transition: all 0.2s;
+            -webkit-appearance: none;
         }
         
         .chat-input:focus {
             border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
         }
         
         .input-actions {
             position: absolute;
-            right: 12px;
-            bottom: 10px;
+            right: 8px;
+            bottom: 8px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
         
         .mic-btn, .send-btn {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             background: transparent;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text-primary);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
         
-        .mic-btn:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
+        .mic-btn:active, .send-btn:active {
+            transform: scale(0.9);
         }
         
         .mic-btn.recording {
             background: var(--danger);
             border-color: var(--danger);
             color: white;
-            animation: pulse 1.5s infinite;
         }
         
         .send-btn {
@@ -660,21 +785,18 @@
             color: white;
         }
         
-        .send-btn:hover:not(:disabled) {
-            background: var(--accent-secondary);
-        }
-        
         .send-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
+            opacity: 0.5;
         }
         
         /* Section Content */
         .section-content {
             display: none;
-            padding: 24px;
+            padding: 20px 16px;
+            padding-bottom: calc(20px + var(--safe-area-inset-bottom));
             overflow-y: auto;
             flex: 1;
+            -webkit-overflow-scrolling: touch;
         }
         
         .section-content.active {
@@ -683,17 +805,17 @@
         
         .section-header {
             max-width: 900px;
-            margin: 0 auto 32px;
+            margin: 0 auto 24px;
         }
         
         .section-title {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
             margin-bottom: 8px;
         }
         
         .section-description {
-            font-size: 16px;
+            font-size: 15px;
             color: var(--text-secondary);
         }
         
@@ -701,7 +823,7 @@
             max-width: 900px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: 1fr;
             gap: 16px;
         }
         
@@ -713,10 +835,8 @@
             transition: all 0.3s;
         }
         
-        .card:hover {
-            border-color: var(--accent-primary);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
+        .card:active {
+            transform: scale(0.98);
         }
         
         .card-icon {
@@ -742,53 +862,42 @@
             color: var(--text-secondary);
         }
         
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -280px;
-                height: 100%;
-                z-index: 1000;
-                transition: left 0.3s;
-                box-shadow: var(--shadow-lg);
-            }
-            
-            .sidebar.open {
-                left: 0;
-            }
-            
-            .menu-toggle {
-                display: flex;
-            }
-            
-            .messages-wrapper {
-                padding: 16px;
-            }
-            
-            .message {
-                padding: 16px 0;
-            }
-            
-            .input-container {
-                padding: 12px 16px 16px;
-            }
-            
-            .suggestions {
-                grid-template-columns: 1fr;
-            }
-            
-            .chat-header h1 {
-                font-size: 16px;
-            }
-            
-            .header-btn {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-            
-            .status-badge {
-                display: none;
-            }
+        /* Scrollbar - Uniquement pour desktop */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            top: calc(20px + var(--safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 14px 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            animation: slideDown 0.3s ease-out;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
         }
         
         /* Overlay pour mobile */
@@ -800,7 +909,7 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
+            z-index: 99;
             backdrop-filter: blur(4px);
         }
         
@@ -808,46 +917,98 @@
             display: block;
         }
         
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
+        /* RESPONSIVE - Tablettes */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .suggestions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
+        /* RESPONSIVE - Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                height: 100%;
+                z-index: 1000;
+                box-shadow: var(--shadow-lg);
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .chat-header h1 {
+                font-size: 16px;
+            }
+            
+            .header-btn span {
+                display: none;
+            }
+            
+            .header-btn {
+                width: 44px;
+                padding: 10px;
+                justify-content: center;
+            }
+            
+            .status-badge {
+                display: none;
+            }
+            
+            .message-actions {
+                position: static;
+                margin-top: 8px;
+            }
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 5px;
+        /* RESPONSIVE - Petits mobiles */
+        @media (max-width: 375px) {
+            .messages-wrapper {
+                padding: 16px 12px;
+            }
+            
+            .input-container {
+                padding: 10px 12px;
+                padding-bottom: calc(10px + var(--safe-area-inset-bottom));
+            }
+            
+            .chat-header {
+                padding: 12px 16px;
+                padding-top: calc(12px + var(--safe-area-inset-top));
+            }
         }
         
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
-        }
-        
-        /* Notifications */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 16px 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            z-index: 2000;
-            animation: slideInRight 0.3s ease-out;
-        }
-        
-        @keyframes slideInRight {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        /* Support PWA */
+        @media (display-mode: standalone) {
+            .chat-header {
+                padding-top: calc(16px + var(--safe-area-inset-top) + 20px);
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-logo">
+            <img src="logo.png" alt="Jedidja Logo" style="width: 120px; height: 120px; animation: bounce 1s ease-in-out infinite;">
+        </div>
+        <div class="loading-text">Jedidja</div>
+        <div class="loading-subtitle">Assistant IA de nouvelle génération</div>
+        <div class="loading-spinner"></div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar"></div>
+        </div>
+    </div>
+    
     <div class="app-container">
         <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
         
@@ -916,8 +1077,8 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button class="header-btn" onclick="clearChat()">🗑️ Effacer</button>
-                    <button class="header-btn" onclick="toggleVoice()">🔊 Voix</button>
+                    <button class="header-btn" onclick="clearChat()"><span>🗑️ </span>Effacer</button>
+                    <button class="header-btn" onclick="toggleVoice()"><span>🔊 </span>Voix</button>
                 </div>
             </div>
             
@@ -947,28 +1108,18 @@
                         <div class="message assistant">
                             <div class="message-avatar">🤖</div>
                             <div class="message-content">
-                                <p>Bonjour ! Je suis <strong>Jedidja</strong>, ton assistant IA de nouvelle génération. 🚀</p>
-                                <p>Voici ce que je peux faire pour toi :</p>
-                                <ul>
-                                    <li>💬 Converser naturellement sur n'importe quel sujet</li>
-                                    <li>💻 T'aider avec la programmation (code avec coloration syntaxique)</li>
-                                    <li>📝 Créer du contenu (articles, histoires, poèmes...)</li>
-                                    <li>🎓 T'enseigner de nouveaux concepts</li>
-                                    <li>🎨 Utiliser le markdown pour des réponses structurées</li>
-                                </ul>
-                                <p>Clique sur une suggestion ci-dessus ou tape ta question ! 😊</p>
+                                <p>Bonjour ! Je suis <strong>Jedidja</strong>. 👋</p>
+                                <p>Je peux t'aider avec plein de choses : programmation, création de contenu, explications, et bien plus encore.</p>
+                                <p>Pose-moi une question ou choisis une suggestion ! 😊</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="typing-indicator" id="typing">
-                        <div class="message">
-                            <div class="message-avatar">🤖</div>
-                            <div class="typing-dots">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
                         </div>
                     </div>
                 </div>
@@ -1003,8 +1154,8 @@
                 <div class="cards-grid">
                     <div class="card">
                         <div class="card-title">Nouvelle note</div>
-                        <textarea id="note-input" rows="3" placeholder="Écris ta note ici..." style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin: 12px 0; font-family: inherit; resize: vertical;"></textarea>
-                        <button onclick="addNote()" style="width: 100%; padding: 10px 20px; background: var(--accent-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Ajouter</button>
+                        <textarea id="note-input" rows="3" placeholder="Écris ta note ici..." style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 16px; margin: 12px 0; font-family: inherit; resize: vertical;"></textarea>
+                        <button onclick="addNote()" style="width: 100%; padding: 14px 20px; background: var(--accent-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; min-height: 48px;">Ajouter</button>
                     </div>
                 </div>
                 <div id="notes-list" style="max-width: 900px; margin: 24px auto 0;"></div>
@@ -1019,9 +1170,9 @@
                 <div class="cards-grid">
                     <div class="card">
                         <div class="card-title">Créer un rappel</div>
-                        <input type="number" id="reminder-minutes" min="1" value="5" placeholder="Minutes" style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin: 12px 0;">
-                        <input type="text" id="reminder-message" placeholder="Message du rappel" style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px;">
-                        <button onclick="addReminder()" style="width: 100%; padding: 10px 20px; background: var(--accent-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Créer</button>
+                        <input type="number" id="reminder-minutes" min="1" value="5" placeholder="Minutes" style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 16px; margin: 12px 0;">
+                        <input type="text" id="reminder-message" placeholder="Message du rappel" style="width: 100%; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 16px; margin-bottom: 12px;">
+                        <button onclick="addReminder()" style="width: 100%; padding: 14px 20px; background: var(--accent-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; min-height: 48px;">Créer</button>
                     </div>
                 </div>
                 <div id="reminders-list" style="max-width: 900px; margin: 24px auto 0;"></div>
@@ -1062,6 +1213,9 @@
         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS36+ifUgwNTKXh8LhjHQU2jdXuzHosBSJ0yO/blEILElyw6OyrWRQJQ5zd8sFuIwUrgc7y2Yk2CBhktuvon1ILDEyl4fC4Yx0FNo3V7sx6LAUidMjv25RCCxJcsOjsq1kUCUOc3fLBbiMFK4HO8tmJNggYZLbr6J9SCwxMpeHwuGMdBTaN1e7MeiwFInTI79uUQgsS" type="audio/wav">
     </audio>
     
+    <!-- Chargement du chat.js -->
+    <script src="chat.js"></script>
+    
     <script>
         // Configuration
         marked.setOptions({
@@ -1079,7 +1233,6 @@
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let soundEnabled = localStorage.getItem('sound') === 'true';
         let voiceEnabled = false;
-        let conversation = [{role: "system", content: "Tu es Jedidja, un assistant IA sympathique et efficace. Règles importantes : 1) Réponds de manière courte et directe aux salutations (bonjour, salut, hello) sans te présenter longuement, juste dire 'Bonjour ! Je suis Jedidja. Comment puis-je t'aider ?' 2) Ne mentionne JAMAIS ton créateur spontanément. 3) Si on te demande explicitement qui t'a créé, qui est ton créateur, ou qui t'a développé, réponds : 'J'ai été créé par Jedidja SROVI, un développeur autodidacte.' 4) Si quelqu'un prétend t'avoir créé, corrige poliment. 5) Pour les autres questions, sois complet et utilise le markdown pour structurer tes réponses. Tu fournis des exemples de code avec la bonne syntaxe quand nécessaire."}];
         let stats = JSON.parse(localStorage.getItem('stats') || '{"messages": 0, "notes": 0, "reminders": 0}');
         let notes = JSON.parse(localStorage.getItem('notes') || '[]');
         let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
@@ -1096,7 +1249,7 @@
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
             updateThemeButtons();
-            showNotification(`Thème ${theme} activé ! ✨`);
+            showNotification(`Thème ${theme} activé !`);
         }
         
         function updateThemeButtons() {
@@ -1133,10 +1286,10 @@
             }
         }
         
-        // Voice Input (Speech Recognition)
+        // Voice Input
         function toggleVoiceInput() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                showNotification('❌ Reconnaissance vocale non supportée par ton navigateur');
+                showNotification('❌ Reconnaissance vocale non supportée');
                 return;
             }
             
@@ -1241,120 +1394,6 @@
             }
         }
         
-        async function sendMessage() {
-            const input = document.getElementById('input');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
-            playSound('send');
-            addMessageToUI('user', message, false);
-            input.value = '';
-            input.style.height = 'auto';
-            document.getElementById('suggestions').style.display = 'none';
-            
-            conversation.push({role: 'user', content: message});
-            document.getElementById('send-btn').disabled = true;
-            document.getElementById('typing').classList.add('active');
-            
-            try {
-                const response = await fetch('/.netlify/functions/chat', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({message, conversation})
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    conversation.push({role: 'assistant', content: data.response});
-                    playSound('receive');
-                    await addMessageToUI('assistant', data.response, true);
-                    if (voiceEnabled) speak(data.response);
-                    stats.messages++;
-                    localStorage.setItem('stats', JSON.stringify(stats));
-                } else {
-                    throw new Error(data.error);
-                }
-            } catch (error) {
-                addMessageToUI('assistant', '❌ Désolé, une erreur s\'est produite. Réessaie dans quelques instants.', false);
-            }
-            
-            document.getElementById('typing').classList.remove('active');
-            document.getElementById('send-btn').disabled = false;
-        }
-        
-        async function addMessageToUI(type, content, withTyping = false) {
-            const wrapper = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            
-            const avatar = type === 'user' ? '👤' : '🤖';
-            const messageId = 'msg-' + Date.now();
-            
-            messageDiv.innerHTML = `
-                <div class="message-avatar">${avatar}</div>
-                <div class="message-content" id="${messageId}"></div>
-                ${type === 'assistant' ? '<div class="message-actions"><button class="copy-btn" onclick="copyMessage(\'' + messageId + '\')">📋 Copier</button></div>' : ''}
-            `;
-            
-            wrapper.appendChild(messageDiv);
-            
-            const contentDiv = document.getElementById(messageId);
-            
-            if (withTyping && type === 'assistant') {
-                await typeMessage(contentDiv, content);
-            } else {
-                if (type === 'assistant') {
-                    contentDiv.innerHTML = marked.parse(content);
-                    contentDiv.querySelectorAll('pre code').forEach((block) => {
-                        hljs.highlightElement(block);
-                    });
-                } else {
-                    contentDiv.textContent = content;
-                }
-            }
-            
-            scrollToBottom();
-        }
-        
-        async function typeMessage(element, text) {
-            const html = marked.parse(text);
-            element.innerHTML = '';
-            
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-            const textContent = tempDiv.textContent;
-            
-            const speed = 20;
-            
-            for (let i = 0; i < textContent.length; i++) {
-                element.textContent = textContent.substring(0, i + 1);
-                if (i % 5 === 0) scrollToBottom();
-                await new Promise(resolve => setTimeout(resolve, speed));
-            }
-            
-            element.innerHTML = html;
-            element.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
-            });
-            scrollToBottom();
-        }
-        
-        function copyMessage(messageId) {
-            const content = document.getElementById(messageId).textContent;
-            navigator.clipboard.writeText(content).then(() => {
-                showNotification('✅ Message copié !');
-            });
-        }
-        
-        function scrollToBottom() {
-            const container = document.getElementById('chat-container');
-            setTimeout(() => {
-                container.scrollTop = container.scrollHeight;
-            }, 50);
-        }
-        
         function handleKeyDown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
@@ -1363,7 +1402,7 @@
         }
         
         function clearChat() {
-            conversation = [conversation[0]];
+            resetConversation();
             document.getElementById('messages').innerHTML = `
                 <div class="suggestions" id="suggestions">
                     <button class="suggestion-btn" onclick="useSuggestion(this)">
@@ -1385,7 +1424,10 @@
                 </div>
                 <div class="message assistant">
                     <div class="message-avatar">🤖</div>
-                    <div class="message-content">Nouvelle conversation ! Comment puis-je t'aider ? 😊</div>
+                    <div class="message-content">
+                        <p>Bonjour ! Je suis <strong>Jedidja</strong>. 👋</p>
+                        <p>Nouvelle conversation ! Comment puis-je t'aider ? 😊</p>
+                    </div>
                 </div>
             `;
         }
@@ -1393,15 +1435,6 @@
         function toggleVoice() {
             voiceEnabled = !voiceEnabled;
             showNotification(voiceEnabled ? '🔊 Voix activée' : '🔇 Voix désactivée');
-        }
-        
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').replace(/[#*`]/g, ''));
-                utterance.lang = 'fr-FR';
-                utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-            }
         }
         
         // Notes
@@ -1427,12 +1460,12 @@
                 div.className = 'card';
                 div.style.marginBottom = '16px';
                 div.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div style="flex: 1;">
-                            <div style="margin-bottom: 8px;">${note.text}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: start; gap: 12px;">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="margin-bottom: 8px; word-wrap: break-word;">${note.text}</div>
                             <div style="font-size: 12px; color: var(--text-secondary);">${note.timestamp}</div>
                         </div>
-                        <button onclick="deleteNote(${note.id})" class="copy-btn">🗑️</button>
+                        <button onclick="deleteNote(${note.id})" class="copy-btn" style="flex-shrink: 0;">🗑️</button>
                     </div>
                 `;
                 list.appendChild(div);
@@ -1443,7 +1476,7 @@
             if (confirm('Supprimer cette note ?')) {
                 notes = notes.filter(n => n.id !== id);
                 localStorage.setItem('notes', JSON.stringify(notes));
-                stats.notes--;
+                stats.notes = Math.max(0, stats.notes - 1);
                 localStorage.setItem('stats', JSON.stringify(stats));
                 loadNotes();
                 showNotification('✅ Note supprimée');
@@ -1469,7 +1502,7 @@
             localStorage.setItem('stats', JSON.stringify(stats));
             
             setTimeout(() => {
-                showNotification(`⏰ RAPPEL !\n\n${message}`);
+                showNotification(`⏰ RAPPEL: ${message}`);
                 if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
                 if (soundEnabled) playSound('receive');
                 deleteReminder(reminder.id);
@@ -1489,12 +1522,12 @@
                 div.className = 'card';
                 div.style.marginBottom = '16px';
                 div.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600; margin-bottom: 8px;">⏰ ${reminder.message}</div>
-                            <div style="font-size: 14px; color: var(--text-secondary);">Dans ${reminder.minutes} minute(s) • ${reminder.time}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: start; gap: 12px;">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 600; margin-bottom: 8px; word-wrap: break-word;">⏰ ${reminder.message}</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Dans ${reminder.minutes} min • ${reminder.time}</div>
                         </div>
-                        <button onclick="deleteReminder(${reminder.id})" class="copy-btn">🗑️</button>
+                        <button onclick="deleteReminder(${reminder.id})" class="copy-btn" style="flex-shrink: 0;">🗑️</button>
                     </div>
                 `;
                 list.appendChild(div);
@@ -1504,7 +1537,7 @@
         function deleteReminder(id) {
             reminders = reminders.filter(r => r.id !== id);
             localStorage.setItem('reminders', JSON.stringify(reminders));
-            stats.reminders--;
+            stats.reminders = Math.max(0, stats.reminders - 1);
             localStorage.setItem('stats', JSON.stringify(stats));
             loadReminders();
         }
@@ -1524,7 +1557,7 @@
             document.body.appendChild(notif);
             
             setTimeout(() => {
-                notif.style.animation = 'slideInRight 0.3s ease-out reverse';
+                notif.style.opacity = '0';
                 setTimeout(() => notif.remove(), 300);
             }, 3000);
         }
@@ -1532,7 +1565,7 @@
         // Auto-resize textarea
         document.getElementById('input').addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
         
         // Keyboard shortcuts
@@ -1545,10 +1578,17 @@
         
         // Init
         window.onload = function() {
+            // Masquer l'écran de chargement après 2.5s
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+            }, 3000);
+            
             document.getElementById('input').focus();
             loadStats();
         };
     </script>
 </body>
 </html>
-                
