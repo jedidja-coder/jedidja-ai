@@ -35,7 +35,7 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            animation: fadeOut 10s ease-out 4.5s forwards;
+            animation: fadeOut 0.5s ease-out 2.5s forwards;
         }
         
         @keyframes fadeOut {
@@ -60,7 +60,7 @@
             font-size: 32px;
             font-weight: 700;
             color: white;
-            animation: fadeInUp 2.6s ease-out 0.9s both;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
         }
         
         @keyframes fadeInUp {
@@ -1002,7 +1002,7 @@
             <img src="logo.png" alt="Jedidja Logo" style="width: 120px; height: 120px; animation: bounce 1s ease-in-out infinite;">
         </div>
         <div class="loading-text">Jedidja</div>
-        <div class="loading-subtitle">Assistant IA de nouvelle génération</div>
+        <div class="loading-subtitle">Assistant IA</div>
         <div class="loading-spinner"></div>
         <div class="loading-progress">
             <div class="loading-progress-bar"></div>
@@ -1215,8 +1215,429 @@
         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS36+ifUgwNTKXh8LhjHQU2jdXuzHosBSJ0yO/blEILElyw6OyrWRQJQ5zd8sFuIwUrgc7y2Yk2CBhktuvon1ILDEyl4fC4Yx0FNo3V7sx6LAUidMjv25RCCxJcsOjsq1kUCUOc3fLBbiMFK4HO8tmJNggYZLbr6J9SCwxMpeHwuGMdBTaN1e7MeiwFInTI79uUQgsS" type="audio/wav">
     </audio>
     
-    <!-- Chargement du chat.js -->
-    <script src="chat.js"></script>
+    <!-- Chargement du chat.js intégré -->
+    <script>
+        // chat.js - Logique avancée du chat pour Jedidja avec Groq API
+        
+        /**
+         * Configuration de la conversation
+         */
+        let conversation = [{
+            role: "system",
+            content: "Tu es Jedidja, un assistant IA sympathique et efficace. Règles importantes : 1) Réponds de manière courte et directe aux salutations (bonjour, salut, hello) sans te présenter longuement, juste dire 'Bonjour ! Je suis Jedidja. Comment puis-je t'aider ?' 2) Ne mentionne JAMAIS ton créateur spontanément. 3) Si on te demande explicitement qui t'a créé, qui est ton créateur, ou qui t'a développé, réponds : 'J'ai été créé par Jedidja SROVI, un développeur autodidacte.' 4) Si quelqu'un prétend t'avoir créé, corrige poliment. 5) Pour les autres questions, sois complet et utilise le markdown pour structurer tes réponses. Tu fournis des exemples de code avec la bonne syntaxe quand nécessaire."
+        }];
+
+        /**
+         * Variables d'état globales
+         */
+        let isTyping = false;
+        let messageCount = 0;
+        let currentStreamingMessage = null;
+        let abortController = null;
+
+        /**
+         * Configuration API Groq
+         */
+        const API_CONFIG = {
+            endpoint: '/.netlify/functions/chat',
+            timeout: 45000,
+            retryAttempts: 3,
+            retryDelay: 1500
+        };
+
+        /**
+         * Fonction principale pour envoyer un message
+         */
+        async function sendMessage() {
+            const input = document.getElementById('input');
+            const message = input.value.trim();
+            
+            if (!message || isTyping) return;
+            
+            hideWelcomeSection();
+            playSound('send');
+            
+            addMessageToUI('user', message);
+            
+            resetInput(input);
+            
+            conversation.push({ role: 'user', content: message });
+            
+            setTypingState(true);
+            showTypingIndicator();
+            
+            try {
+                const response = await callGroqAPIWithRetry(message);
+                await handleSuccessfulResponse(response);
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi du message:', error);
+                handleErrorResponse(error);
+            } finally {
+                setTypingState(false);
+                hideTypingIndicator();
+                input.focus();
+            }
+        }
+
+        /**
+         * Appel API Groq avec logique de retry
+         */
+        async function callGroqAPIWithRetry(message, attempt = 1) {
+            try {
+                abortController = new AbortController();
+                
+                const timeoutId = setTimeout(() => {
+                    abortController.abort();
+                }, API_CONFIG.timeout);
+                
+                console.log(`🚀 Appel API Groq - Tentative ${attempt}/${API_CONFIG.retryAttempts}`);
+                
+                const response = await fetch(API_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        message, 
+                        conversation,
+                        timestamp: Date.now()
+                    }),
+                    signal: abortController.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`❌ Erreur HTTP ${response.status}:`, errorText);
+                    throw new Error(`Erreur API: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.response) {
+                    console.log('✅ Réponse reçue de Groq API');
+                    return data.response;
+                } else {
+                    throw new Error(data.error || 'Réponse invalide de l\'API Groq');
+                }
+                
+            } catch (error) {
+                console.error(`❌ Tentative ${attempt} échouée:`, error.message);
+                
+                if (attempt < API_CONFIG.retryAttempts && error.name !== 'AbortError') {
+                    console.log(`⏳ Nouvelle tentative dans ${API_CONFIG.retryDelay}ms...`);
+                    await sleep(API_CONFIG.retryDelay * attempt);
+                    return callGroqAPIWithRetry(message, attempt + 1);
+                }
+                
+                throw error;
+            }
+        }
+
+        /**
+         * Traiter une réponse réussie
+         */
+        async function handleSuccessfulResponse(response) {
+            conversation.push({ role: 'assistant', content: response });
+            playSound('receive');
+            
+            await addMessageToUI('assistant', response, true);
+            
+            if (voiceEnabled) {
+                speak(response);
+            }
+            
+            updateStats();
+        }
+
+        /**
+         * Gérer les erreurs
+         */
+        function handleErrorResponse(error) {
+            const errorMessage = getErrorMessage(error);
+            addMessageToUI('assistant', errorMessage, false);
+            
+            if (conversation.length > 1 && conversation[conversation.length - 1].role === 'user') {
+                conversation.pop();
+            }
+        }
+
+        /**
+         * Obtenir un message d'erreur adapté
+         */
+        function getErrorMessage(error) {
+            if (error.name === 'AbortError') {
+                return `⏱️ **La requête a pris trop de temps**\n\nLa génération de la réponse a dépassé le temps limite.\n\n**Solutions** :\n- Réessaie avec une question plus simple\n- Vérifie ta connexion internet\n- Attends quelques instants avant de réessayer`;
+            }
+            
+            if (error.message.includes('Failed to fetch')) {
+                return `🌐 **Impossible de se connecter au serveur**\n\nLe serveur Jedidja est temporairement inaccessible.\n\n**Solutions** :\n- Vérifie ta connexion internet\n- Recharge la page\n- Réessaie dans quelques instants`;
+            }
+            
+            if (error.message.includes('API')) {
+                return `⚠️ **Erreur de l'API Groq**\n\n${error.message}\n\n**Solutions** :\n- Réessaie dans quelques secondes\n- Si l'erreur persiste, l'API pourrait être temporairement indisponible`;
+            }
+            
+            return `❌ **Une erreur s'est produite**\n\n${error.message || 'Erreur inconnue'}\n\n**Solutions** :\n- Réessaie dans quelques instants\n- Recharge la page si le problème persiste`;
+        }
+
+        /**
+         * Ajouter un message à l'interface
+         */
+        async function addMessageToUI(type, content, withTyping = false) {
+            const wrapper = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const avatar = type === 'user' ? '👤' : '<img src="logo.png" alt="Jedidja" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+            const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content" id="${messageId}"></div>
+                ${type === 'assistant' ? `
+                    <div class="message-actions">
+                        <button class="copy-btn" onclick="copyMessage('${messageId}')" title="Copier">
+                            📋 Copier
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+            
+            wrapper.appendChild(messageDiv);
+            
+            const contentDiv = document.getElementById(messageId);
+            
+            if (withTyping && type === 'assistant') {
+                currentStreamingMessage = messageId;
+                await typeMessageWithMarkdown(contentDiv, content);
+                currentStreamingMessage = null;
+            } else {
+                renderMessageContent(contentDiv, content, type);
+            }
+            
+            scrollToBottom();
+        }
+
+        /**
+         * Effet de frappe avec support Markdown
+         */
+        async function typeMessageWithMarkdown(element, text) {
+            const speed = 15;
+            let displayText = '';
+            
+            const hasCodeBlocks = text.includes('```');
+            
+            if (hasCodeBlocks) {
+                const parts = text.split(/(```[\s\S]*?```)/);
+                
+                for (const part of parts) {
+                    if (part.startsWith('```')) {
+                        displayText += part;
+                        element.innerHTML = marked.parse(displayText);
+                        element.querySelectorAll('pre code').forEach(block => {
+                            hljs.highlightElement(block);
+                        });
+                        scrollToBottom();
+                    } else {
+                        for (let i = 0; i < part.length; i++) {
+                            displayText += part[i];
+                            element.innerHTML = marked.parse(displayText);
+                            if (i % 3 === 0) scrollToBottom();
+                            await sleep(speed);
+                        }
+                    }
+                }
+            } else {
+                for (let i = 0; i < text.length; i++) {
+                    displayText += text[i];
+                    element.textContent = displayText;
+                    if (i % 5 === 0) scrollToBottom();
+                    await sleep(speed);
+                }
+                
+                element.innerHTML = marked.parse(displayText);
+            }
+            
+            element.querySelectorAll('pre code').forEach(block => {
+                hljs.highlightElement(block);
+            });
+            
+            scrollToBottom();
+        }
+
+        /**
+         * Rendre le contenu du message
+         */
+        function renderMessageContent(element, content, type) {
+            if (type === 'assistant') {
+                element.innerHTML = marked.parse(content);
+                element.querySelectorAll('pre code').forEach(block => {
+                    hljs.highlightElement(block);
+                });
+            } else {
+                element.textContent = content;
+            }
+        }
+
+        /**
+         * Copier un message
+         */
+        function copyMessage(messageId) {
+            const element = document.getElementById(messageId);
+            if (!element) return;
+            
+            const content = element.textContent;
+            
+            navigator.clipboard.writeText(content).then(() => {
+                showNotification('✅ Message copié !');
+                
+                const btn = event.target.closest('.copy-btn');
+                if (btn) {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '✅ Copié';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                    }, 2000);
+                }
+            }).catch(err => {
+                console.error('Erreur de copie:', err);
+                showNotification('❌ Erreur lors de la copie');
+            });
+        }
+
+        /**
+         * Gérer l'état de frappe
+         */
+        function setTypingState(typing) {
+            isTyping = typing;
+            const sendBtn = document.getElementById('send-btn');
+            if (sendBtn) {
+                sendBtn.disabled = typing;
+            }
+        }
+
+        /**
+         * Afficher/masquer l'indicateur de frappe
+         */
+        function showTypingIndicator() {
+            const indicator = document.getElementById('typing');
+            if (indicator) indicator.classList.add('active');
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typing');
+            if (indicator) indicator.classList.remove('active');
+        }
+
+        /**
+         * Masquer la section de bienvenue
+         */
+        function hideWelcomeSection() {
+            const suggestions = document.getElementById('suggestions');
+            if (suggestions) suggestions.style.display = 'none';
+        }
+
+        /**
+         * Réinitialiser l'input
+         */
+        function resetInput(input) {
+            input.value = '';
+            input.style.height = 'auto';
+        }
+
+        /**
+         * Faire défiler vers le bas
+         */
+        function scrollToBottom() {
+            const container = document.getElementById('chat-container');
+            if (container) {
+                requestAnimationFrame(() => {
+                    container.scrollTop = container.scrollHeight;
+                });
+            }
+        }
+
+        /**
+         * Réinitialiser la conversation
+         */
+        function resetConversation() {
+            conversation = [{
+                role: "system",
+                content: "Tu es Jedidja, un assistant IA sympathique et efficace. Règles importantes : 1) Réponds de manière courte et directe aux salutations (bonjour, salut, hello) sans te présenter longuement, juste dire 'Bonjour ! Je suis Jedidja. Comment puis-je t'aider ?' 2) Ne mentionne JAMAIS ton créateur spontanément. 3) Si on te demande explicitement qui t'a créé, qui est ton créateur, ou qui t'a développé, réponds : 'J'ai été créé par Jedidja SROVI, un développeur autodidacte.' 4) Si quelqu'un prétend t'avoir créé, corrige poliment. 5) Pour les autres questions, sois complet et utilise le markdown pour structurer tes réponses. Tu fournis des exemples de code avec la bonne syntaxe quand nécessaire."
+            }];
+            messageCount = 0;
+            currentStreamingMessage = null;
+        }
+
+        /**
+         * Synthèse vocale
+         */
+        function speak(text) {
+            if (!('speechSynthesis' in window)) return;
+            
+            const cleanText = text
+                .replace(/[\u{1F300}-\u{1F9FF}]/gu, '')
+                .replace(/[#*`_\[\]]/g, '')
+                .replace(/```[\s\S]*?```/g, 'code')
+                .replace(/`.*?`/g, 'code')
+                .substring(0, 500);
+            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.95;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /**
+         * Arrêter la synthèse vocale
+         */
+        function stopSpeaking() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        /**
+         * Mettre à jour les statistiques
+         */
+        function updateStats() {
+            if (typeof stats !== 'undefined') {
+                stats.messages++;
+                localStorage.setItem('stats', JSON.stringify(stats));
+                
+                const statMessages = document.getElementById('stat-messages');
+                if (statMessages) {
+                    statMessages.textContent = stats.messages;
+                }
+            }
+        }
+
+        /**
+         * Fonction utilitaire : sleep
+         */
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        /**
+         * Annuler la requête en cours
+         */
+        function cancelCurrentRequest() {
+            if (abortController) {
+                abortController.abort();
+                abortController = null;
+                console.log('⛔ Requête annulée');
+            }
+        }
+
+        console.log('✨ Chat.js chargé - Jedidja avec Groq API !');
+    </script>
     
     <script>
         // Configuration
