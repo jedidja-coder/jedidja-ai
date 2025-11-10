@@ -80,7 +80,7 @@
 # Ces variables doivent être configurées dans l'interface Netlify
 # Site Settings > Environment Variables
 #
-# GROK_API_KEY = "votre_clé_api_grok"
+# GROQ_API_KEY = "votre_clé_api_groq"
 # NODE_ENV = "production"
 
 # ============================================
