@@ -1,0 +1,117 @@
+# ============================================
+# CONFIGURATION NETLIFY POUR JEDIDJA 2.0
+# ============================================
+
+[build]
+  # Pas de commande de build nécessaire (site HTML statique)
+  command = "echo 'Aucune étape de build'"
+  
+  # Dossier à publier (racine du projet)
+  publish = "."
+  
+  # Dossier des fonctions serverless
+  functions = "netlify/functions"
+
+# ============================================
+# PARAMÈTRES DU SITE
+# ============================================
+[build.environment]
+  # Version de Node.js à utiliser
+  NODE_VERSION = "18"
+
+# ============================================
+# REDIRECTIONS ET RÈGLES
+# ============================================
+
+# Rediriger toutes les erreurs 404 vers index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+  
+  # Ne pas rediriger les appels aux fonctions
+  conditions = {Role = ["anonymous"]}
+
+# ============================================
+# HEADERS DE SÉCURITÉ
+# ============================================
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Sécurité XSS
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    
+    # Référer policy
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Permissions Policy
+    Permissions-Policy = "geolocation=(), microphone=(self), camera=()"
+    
+    # Content Security Policy (à ajuster selon vos besoins)
+    Content-Security-Policy = "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; img-src 'self' https: data: blob:;"
+
+# Headers spécifiques pour les fonctions
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+
+# ============================================
+# PLUGINS NETLIFY (OPTIONNEL)
+# ============================================
+# Décommenter pour activer des plugins
+
+# Plugin de cache
+# [[plugins]]
+#   package = "@netlify/plugin-lighthouse"
+
+# Plugin d'optimisation d'images
+# [[plugins]]
+#   package = "netlify-plugin-image-optim"
+
+# ============================================
+# VARIABLES D'ENVIRONNEMENT (POUR RÉFÉRENCE)
+# ============================================
+# Ces variables doivent être configurées dans l'interface Netlify
+# Site Settings > Environment Variables
+#
+# GROK_API_KEY = "votre_clé_api_grok"
+# NODE_ENV = "production"
+
+# ============================================
+# PARAMÈTRES DE DÉPLOIEMENT
+# ============================================
+[context.production]
+  # Production
+  environment = { NODE_ENV = "production" }
+
+[context.deploy-preview]
+  # Aperçu de déploiement (Pull Requests)
+  environment = { NODE_ENV = "development" }
+
+[context.branch-deploy]
+  # Déploiement de branches
+  environment = { NODE_ENV = "staging" }
+
+# ============================================
+# FONCTIONS SERVERLESS - CONFIGURATION
+# ============================================
+[functions]
+  # Dossier des fonctions
+  directory = "netlify/functions"
+  
+  # Runtime Node.js
+  node_bundler = "esbuild"
+  
+  # Timeout des fonctions (en secondes, max 26s pour le plan gratuit)
+  # included_files = ["netlify/functions/**"]
+
+# Configuration spécifique pour la fonction chat
+[[functions."chat"]]
+  # Timeout personnalisé (10 secondes)
+  timeout = 10
