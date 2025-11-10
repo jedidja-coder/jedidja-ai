@@ -1,5 +1,5 @@
 // ============================================
-// FONCTION NETLIFY - CHAT AVEC GROK API
+// FONCTION NETLIFY - CHAT AVEC GROQ API
 // ============================================
 // Ce fichier doit être placé dans : netlify/functions/chat.js
 
@@ -9,7 +9,6 @@ const fetch = require('node-fetch');
 // HANDLER PRINCIPAL
 // ============================================
 exports.handler = async (event, context) => {
-    // Autoriser uniquement les requêtes POST
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
@@ -21,20 +20,15 @@ exports.handler = async (event, context) => {
         // ============================================
         // RÉCUPÉRER LA CLÉ API DEPUIS LES VARIABLES D'ENVIRONNEMENT
         // ============================================
-        // Configuration dans Netlify : Site settings > Environment variables
-        // Nom de la variable : GROK_API_KEY
-        // Valeur : votre clé API Grok
-        const GROK_API_KEY = process.env.GROK_API_KEY;
+        const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-        if (!GROK_API_KEY) {
-            console.error('❌ GROK_API_KEY non configurée');
+        if (!GROQ_API_KEY) {
+            console.error('❌ GROQ_API_KEY non configurée');
             return {
                 statusCode: 500,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    error: 'Clé API Grok non configurée. Ajoute GROK_API_KEY dans les variables d\'environnement Netlify.' 
+                    error: 'Clé API Groq non configurée. Ajoute GROQ_API_KEY dans les variables d\'environnement Netlify.' 
                 })
             };
         }
@@ -47,9 +41,7 @@ exports.handler = async (event, context) => {
         if (!messages || !Array.isArray(messages)) {
             return {
                 statusCode: 400,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     error: 'Format de requête invalide. "messages" doit être un tableau.' 
                 })
@@ -91,22 +83,21 @@ exports.handler = async (event, context) => {
 Réponds maintenant à l'utilisateur de manière naturelle et utile !`
         };
 
-        // Ajouter le système de prompt au début
         const fullMessages = [systemPrompt, ...messages];
 
         // ============================================
-        // APPEL À L'API GROK (X.AI)
+        // APPEL À L'API GROQ (Llama 3.3 - 70B)
         // ============================================
-        console.log('📡 Appel à l\'API Grok...');
-        
-        const response = await fetch('https://api.x.ai/v1/chat/completions', {
+        console.log('📡 Appel à l\'API Groq...');
+
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${GROK_API_KEY}`
+                'Authorization': `Bearer ${GROQ_API_KEY}`
             },
             body: JSON.stringify({
-                model: 'grok-beta', // ou 'grok-2' selon votre accès
+                model: 'llama-3.3-70b-versatile',
                 messages: fullMessages,
                 temperature: 0.7,
                 max_tokens: 2000,
@@ -119,27 +110,22 @@ Réponds maintenant à l'utilisateur de manière naturelle et utile !`
         // ============================================
         if (!response.ok) {
             const errorData = await response.text();
-            console.error('❌ Erreur API Grok:', response.status, errorData);
+            console.error('❌ Erreur API Groq:', response.status, errorData);
             
-            let errorMessage = 'Erreur lors de l\'appel à l\'API Grok';
+            let errorMessage = 'Erreur lors de l\'appel à l\'API Groq';
             
             if (response.status === 401) {
-                errorMessage = 'Clé API Grok invalide ou expirée';
+                errorMessage = 'Clé API Groq invalide ou expirée';
             } else if (response.status === 429) {
-                errorMessage = 'Limite de requêtes atteinte. Réessaye dans quelques instants';
-            } else if (response.status === 500) {
-                errorMessage = 'Erreur serveur Grok. Réessaye plus tard';
+                errorMessage = 'Limite de requêtes atteinte. Réessaye plus tard.';
+            } else if (response.status >= 500) {
+                errorMessage = 'Erreur serveur Groq. Réessaye plus tard.';
             }
 
             return {
                 statusCode: response.status,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    error: errorMessage,
-                    details: errorData 
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ error: errorMessage, details: errorData })
             };
         }
 
@@ -147,23 +133,19 @@ Réponds maintenant à l'utilisateur de manière naturelle et utile !`
         // EXTRAIRE LA RÉPONSE
         // ============================================
         const data = await response.json();
-        
-        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+
+        if (!data.choices || !data.choices[0]?.message) {
             console.error('❌ Format de réponse inattendu:', data);
             return {
                 statusCode: 500,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    error: 'Format de réponse inattendu de l\'API Grok' 
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ error: 'Format de réponse inattendu de l\'API Groq' })
             };
         }
 
         const assistantMessage = data.choices[0].message.content;
 
-        console.log('✅ Réponse reçue de Grok');
+        console.log('✅ Réponse reçue de Groq');
 
         // ============================================
         // RETOURNER LA RÉPONSE
@@ -172,27 +154,21 @@ Réponds maintenant à l'utilisateur de manière naturelle et utile !`
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*', // Autoriser les requêtes depuis n'importe quel domaine
+                'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Methods': 'POST'
             },
             body: JSON.stringify({
                 response: assistantMessage,
-                usage: data.usage // Informations sur l'utilisation (tokens)
+                usage: data.usage
             })
         };
 
     } catch (error) {
-        // ============================================
-        // GESTION DES ERREURS GLOBALES
-        // ============================================
         console.error('❌ Erreur dans la fonction:', error);
-        
         return {
             statusCode: 500,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 error: 'Erreur interne du serveur',
                 message: error.message 
@@ -207,41 +183,20 @@ Réponds maintenant à l'utilisateur de manière naturelle et utile !`
 /*
 📦 INSTALLATION SUR NETLIFY :
 
-1. Structure du projet :
+1. Structure :
    mon-projet/
    ├── index.html
    ├── netlify/
    │   └── functions/
    │       └── chat.js
-   └── package.json (optionnel)
 
 2. Dans Netlify Dashboard :
    - Site settings > Environment variables
-   - Ajouter : GROK_API_KEY = votre_clé_api_grok
+   - Ajouter :
+     GROQ_API_KEY = ta_clé_api_groq
 
 3. Déploiement :
-   - Connecter votre repo GitHub/GitLab
-   - Ou faire un drag & drop du dossier
-   - Netlify détectera automatiquement la fonction
+   - Connecte ton repo ou dépose ton dossier sur Netlify
+   - Netlify détectera automatiquement la fonction et cachera la clé
 
-4. Test :
-   - URL de la fonction : https://votre-site.netlify.app/.netlify/functions/chat
-   - Le site index.html appellera automatiquement cette fonction
-
-🔑 OBTENIR UNE CLÉ API GROK :
-   - Aller sur https://x.ai/api
-   - Créer un compte
-   - Générer une clé API
-   - La copier dans les variables d'environnement Netlify
-
-⚠️ IMPORTANT :
-   - Ne jamais commiter la clé API dans le code
-   - Toujours utiliser les variables d'environnement
-   - La clé est sécurisée côté serveur (fonction Netlify)
-
-💡 ALTERNATIVE SI PAS D'ACCÈS GROK :
-   - Utiliser OpenAI API (GPT-3.5/4)
-   - Utiliser Anthropic Claude API
-   - Utiliser Mistral AI API
-   - Modifier l'URL et le format de requête en conséquence
 */
