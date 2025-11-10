@@ -6,7 +6,7 @@
     <title>Jedidja - Assistant IA 2.0</title>
     
     <!-- ============================================ -->
-    <!-- STYLES CSS INTÉGRÉS -->
+    <!-- STYLES CSS COMPLETS -->
     <!-- ============================================ -->
     <style>
         /* Reset et base */
@@ -103,12 +103,8 @@
         }
 
         @keyframes splashPulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .splash-inner {
@@ -174,7 +170,7 @@
             height: 100%;
             background: linear-gradient(90deg, #3b82f6, #8b5cf6);
             border-radius: 10px;
-            animation: splashProgress 2s ease-out forwards;
+            animation: splashProgress 2.5s ease-out forwards;
         }
 
         @keyframes splashProgress {
@@ -189,6 +185,8 @@
             display: flex;
             height: 100vh;
             position: relative;
+            opacity: 0;
+            transition: opacity 1s ease;
         }
 
         /* ============================================ */
@@ -220,6 +218,7 @@
             width: 50px;
             height: 50px;
             position: relative;
+            flex-shrink: 0;
         }
 
         .logo-circle {
@@ -265,8 +264,14 @@
         }
 
         @keyframes pulse-loading {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 1; 
+            }
+            50% { 
+                transform: scale(1.1); 
+                opacity: 0.7; 
+            }
         }
 
         .brand-info h1 {
@@ -401,6 +406,7 @@
             padding: 8px;
             border-radius: 8px;
             transition: all 0.2s;
+            font-size: 20px;
         }
 
         .menu-btn:hover {
@@ -525,34 +531,111 @@
             margin-top: 8px;
         }
 
-        .typing-indicator {
+        /* Animation de l'IA qui réfléchit */
+        .ai-thinking-container {
             display: flex;
-            gap: 8px;
-            padding: 16px;
+            align-items: center;
+            gap: 16px;
         }
 
-        .typing-dot {
+        .ai-thinking-logo {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .thinking-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #3b82f6,
+                #60a5fa,
+                #2563eb,
+                #5b21b6,
+                #3b82f6
+            );
+            animation: thinkingRotate 2s linear infinite;
+        }
+
+        @keyframes thinkingRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .thinking-middle {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            background: #1e3a8a;
+            border: 3px solid white;
+            animation: thinkingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes thinkingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .thinking-inner {
+            position: absolute;
+            top: 30%;
+            left: 30%;
+            width: 40%;
+            height: 40%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #60a5fa, #1e1b4b);
+            animation: thinkingGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes thinkingGlow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(59, 130, 246, 1);
+            }
+        }
+
+        .thinking-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .thinking-dot {
             width: 8px;
             height: 8px;
             background: #60a5fa;
             border-radius: 50%;
-            animation: typing 1.4s infinite;
+            animation: bounce 1.4s ease-in-out infinite;
         }
 
-        .typing-dot:nth-child(2) {
+        .thinking-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .thinking-dot:nth-child(2) {
             animation-delay: 0.2s;
         }
 
-        .typing-dot:nth-child(3) {
+        .thinking-dot:nth-child(3) {
             animation-delay: 0.4s;
         }
 
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(1) translateY(0);
+                opacity: 0.6;
             }
-            30% {
-                transform: translateY(-10px);
+            40% {
+                transform: scale(1.3) translateY(-8px);
+                opacity: 1;
             }
         }
 
@@ -598,6 +681,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
         }
 
         .action-btn:hover {
@@ -631,12 +715,13 @@
             border: none;
             color: white;
             cursor: pointer;
-            padding: 10px;
+            padding: 10px 14px;
             border-radius: 10px;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
         }
 
         .send-btn:hover {
@@ -654,34 +739,6 @@
             margin-top: 12px;
             font-size: 12px;
             color: #9ca3af;
-        }
-
-        /* ============================================ */
-        /* RESPONSIVE - MOBILE */
-        /* ============================================ */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                z-index: 1000;
-                height: 100vh;
-                width: 280px;
-            }
-
-            .message-content {
-                max-width: 85%;
-            }
-
-            .header {
-                padding: 0 16px;
-            }
-
-            .messages-container {
-                padding: 16px;
-            }
-
-            .input-container {
-                padding: 16px;
-            }
         }
 
         /* ============================================ */
@@ -720,18 +777,83 @@
             font-size: 14px;
             font-weight: 500;
         }
+
+        /* ============================================ */
+        /* RESPONSIVE - MOBILE */
+        /* ============================================ */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                z-index: 1000;
+                height: 100vh;
+                width: 280px;
+            }
+
+            .splash-logo-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .splash-text h1 {
+                font-size: 36px;
+            }
+
+            .splash-progress {
+                width: 250px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .messages-container {
+                padding: 16px;
+            }
+
+            .input-container {
+                padding: 16px;
+            }
+
+            .suggestions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- ============================================ -->
-    <!-- STRUCTURE HTML -->
+    <!-- ÉCRAN DE CHARGEMENT -->
     <!-- ============================================ -->
-    <div class="app-container">
+    <div id="loadingScreen">
+        <div class="splash-logo-container">
+            <div class="splash-outer"></div>
+            <div class="splash-middle"></div>
+            <div class="splash-inner"></div>
+        </div>
+        
+        <div class="splash-text">
+            <h1>Jedidja</h1>
+            <p>Initialisation de l'assistant IA...</p>
+        </div>
+        
+        <div class="splash-progress">
+            <div class="splash-progress-fill"></div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- APPLICATION PRINCIPALE -->
+    <!-- ============================================ -->
+    <div class="app-container" id="appContainer">
         
         <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo" id="logo">
+                <div class="logo" id="mainLogo">
                     <div class="logo-circle"></div>
                 </div>
                 <div class="brand-info">
@@ -826,7 +948,7 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- JAVASCRIPT -->
+    <!-- JAVASCRIPT COMPLET -->
     <!-- ============================================ -->
     <script>
         // ============================================
@@ -848,20 +970,29 @@
             }
         };
 
-        // État de vérification d'identité
         let awaitingVerification = false;
         let verificationAttempts = 0;
 
         // ============================================
+        // MASQUER L'ÉCRAN DE CHARGEMENT
+        // ============================================
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('appContainer').style.opacity = '1';
+            }, 2500);
+        });
+
+        // ============================================
         // INITIALISATION
         // ============================================
-        window.onload = function() {
+        document.addEventListener('DOMContentLoaded', function() {
             addMessage('assistant', `Bonjour ! Je suis **Jedidja**, ton assistant IA de nouvelle génération. 🚀
 
 Voici ce que je peux faire pour toi :
 
 💬 Converser naturellement sur n'importe quel sujet
-💻 T'aider avec la programmation
+💻 T'aider avec la programmation (tous langages)
 🎨 Créer du contenu (articles, histoires, poèmes...)
 🎓 T'enseigner de nouveaux concepts
 🌐 Rechercher des informations sur le web
@@ -869,9 +1000,8 @@ Voici ce que je peux faire pour toi :
 
 Clique sur une suggestion ci-dessous ou tape ta question ! 😊`);
 
-            // Afficher les suggestions au démarrage
             showSuggestions();
-        };
+        });
 
         // ============================================
         // AFFICHER LES SUGGESTIONS DE DÉMARRAGE
@@ -879,19 +1009,19 @@ Clique sur une suggestion ci-dessous ou tape ta question ! 😊`);
         function showSuggestions() {
             const suggestionsHTML = `
                 <div class="suggestions-grid">
-                    <div class="suggestion-card" onclick="useSuggestion('Explique-moi un concept')">
+                    <div class="suggestion-card" onclick="useSuggestion('Explique-moi le concept de l\\'intelligence artificielle')">
                         <div class="suggestion-icon">💡</div>
                         <div class="suggestion-text">Explique-moi un concept</div>
                     </div>
-                    <div class="suggestion-card" onclick="useSuggestion('Aide-moi à coder')">
+                    <div class="suggestion-card" onclick="useSuggestion('Aide-moi à créer une fonction JavaScript')">
                         <div class="suggestion-icon">💻</div>
                         <div class="suggestion-text">Aide-moi à coder</div>
                     </div>
-                    <div class="suggestion-card" onclick="useSuggestion('Sois créatif')">
+                    <div class="suggestion-card" onclick="useSuggestion('Écris-moi une histoire courte sur l\\'espace')">
                         <div class="suggestion-icon">✨</div>
                         <div class="suggestion-text">Sois créatif</div>
                     </div>
-                    <div class="suggestion-card" onclick="useSuggestion('Apprends-moi quelque chose')">
+                    <div class="suggestion-card" onclick="useSuggestion('Apprends-moi quelque chose d\\'intéressant')">
                         <div class="suggestion-icon">📚</div>
                         <div class="suggestion-text">Apprends-moi quelque chose</div>
                     </div>
@@ -912,7 +1042,7 @@ Clique sur une suggestion ci-dessous ou tape ta question ! 😊`);
             const lowerMsg = message.toLowerCase();
 
             // Vérifier si c'est une question sur le créateur
-            const creatorKeywords = ['créateur', 'createur', 'qui t\'a créé', 'qui t\'a crée', 'qui ta créé', 'qui ta crée', 'ton créateur', 'ton createur'];
+            const creatorKeywords = ['créateur', 'createur', 'qui t\'a créé', 'qui t\'a crée', 'qui ta créé', 'qui ta crée', 'ton créateur', 'ton createur', 'qui t\'a fait', 'qui t\'a conçu'];
             const isCreatorQuestion = creatorKeywords.some(keyword => lowerMsg.includes(keyword));
 
             if (isCreatorQuestion && !awaitingVerification) {
@@ -1024,7 +1154,6 @@ Les réponses fournies ne correspondent pas. Réessaye :
             container.appendChild(messageDiv);
             messages.push({ role, content, timestamp: now });
             
-            // Scroll vers le bas
             container.scrollTop = container.scrollHeight;
         }
 
@@ -1032,49 +1161,57 @@ Les réponses fournies ne correspondent pas. Réessaye :
         // FORMATER LE MESSAGE (MARKDOWN BASIQUE)
         // ============================================
         function formatMessage(text) {
-            // Convertir le markdown basique en HTML
             return text
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br>')
                 .replace(/^# (.*?)$/gm, '<h2 style="font-size: 1.5em; margin: 12px 0;">$1</h2>')
-                .replace(/^## (.*?)$/gm, '<h3 style="font-size: 1.2em; margin: 10px 0;">$1</h3>');
+                .replace(/^## (.*?)$/gm, '<h3 style="font-size: 1.2em; margin: 10px 0;">$1</h3>')
+                .replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">$1</code>');
         }
 
         // ============================================
-        // AFFICHER L'INDICATEUR DE FRAPPE
+        // AFFICHER L'INDICATEUR DE RÉFLEXION
         // ============================================
-        function showTypingIndicator() {
+        function showThinkingIndicator() {
             const container = document.getElementById('messagesContainer');
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message';
-            typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = `
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'message';
+            thinkingDiv.id = 'thinkingIndicator';
+            thinkingDiv.innerHTML = `
                 <div class="message-avatar">
                     <div class="logo" style="width: 40px; height: 40px;">
                         <div class="logo-circle"></div>
                     </div>
                 </div>
                 <div class="message-content">
-                    <div class="typing-indicator">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
+                    <div class="ai-thinking-container">
+                        <div class="ai-thinking-logo">
+                            <div class="thinking-outer"></div>
+                            <div class="thinking-middle"></div>
+                            <div class="thinking-inner"></div>
+                        </div>
+                        <span style="color: #9ca3af;">Jedidja réfléchit...</span>
+                        <div class="thinking-dots">
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                        </div>
                     </div>
                 </div>
             `;
-            container.appendChild(typingDiv);
+            container.appendChild(thinkingDiv);
             container.scrollTop = container.scrollHeight;
         }
 
-        function removeTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
+        function removeThinkingIndicator() {
+            const indicator = document.getElementById('thinkingIndicator');
             if (indicator) {
                 indicator.remove();
             }
         }
 
         // ============================================
-        // ENVOYER UN MESSAGE
+        // ENVOYER UN MESSAGE AVEC GROQ API
         // ============================================
         async function sendMessage() {
             const input = document.getElementById('messageInput');
@@ -1090,26 +1227,26 @@ Les réponses fournies ne correspondent pas. Réessaye :
             // Désactiver le bouton d'envoi
             isLoading = true;
             document.getElementById('sendBtn').disabled = true;
-            document.getElementById('logo').classList.add('loading');
+            document.getElementById('mainLogo').classList.add('loading');
 
-            // Afficher l'indicateur de frappe
-            showTypingIndicator();
+            // Afficher l'indicateur de réflexion
+            showThinkingIndicator();
 
             // Vérifier l'identité si nécessaire
             const identityCheck = checkIdentity(message);
             if (identityCheck) {
-                removeTypingIndicator();
+                removeThinkingIndicator();
                 await new Promise(resolve => setTimeout(resolve, 800));
                 addMessage('assistant', identityCheck.response);
                 isLoading = false;
                 document.getElementById('sendBtn').disabled = false;
-                document.getElementById('logo').classList.remove('loading');
+                document.getElementById('mainLogo').classList.remove('loading');
                 return;
             }
 
             try {
                 // ============================================
-                // APPEL À LA FONCTION NETLIFY
+                // APPEL À LA FONCTION NETLIFY (GROQ API)
                 // ============================================
                 const response = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
@@ -1126,7 +1263,7 @@ Les réponses fournies ne correspondent pas. Réessaye :
 
                 const data = await response.json();
 
-                removeTypingIndicator();
+                removeThinkingIndicator();
 
                 if (data.error) {
                     addMessage('assistant', `❌ **Erreur** : ${data.error}\n\nVérifie que ta clé API Groq est correctement configurée dans les variables d'environnement Netlify.`);
@@ -1136,14 +1273,14 @@ Les réponses fournies ne correspondent pas. Réessaye :
 
             } catch (error) {
                 console.error('Erreur:', error);
-                removeTypingIndicator();
-                addMessage('assistant', `❌ **Erreur de connexion**\n\nJe n'arrive pas à me connecter à l'API. Vérifie :\n- Que la fonction Netlify est bien déployée\n- Que ta clé API Grok est configurée\n- Ta connexion Internet`);
+                removeThinkingIndicator();
+                addMessage('assistant', `❌ **Erreur de connexion**\n\nJe n'arrive pas à me connecter à l'API. Vérifie :\n- Que la fonction Netlify est bien déployée\n- Que ta clé API Groq est configurée\n- Ta connexion Internet\n\n**Note :** En développement local, utilise \`netlify dev\` pour tester les fonctions.`);
             }
 
             // Réactiver le bouton
             isLoading = false;
             document.getElementById('sendBtn').disabled = false;
-            document.getElementById('logo').classList.remove('loading');
+            document.getElementById('mainLogo').classList.remove('loading');
         }
 
         // ============================================
@@ -1186,7 +1323,7 @@ Les réponses fournies ne correspondent pas. Réessaye :
 Voici ce que je peux faire pour toi :
 
 💬 Converser naturellement sur n'importe quel sujet
-💻 T'aider avec la programmation
+💻 T'aider avec la programmation (tous langages)
 🎨 Créer du contenu (articles, histoires, poèmes...)
 🎓 T'enseigner de nouveaux concepts
 🌐 Rechercher des informations sur le web
@@ -1216,21 +1353,16 @@ Que puis-je faire pour toi aujourd'hui ?`);
             const voiceBtn = document.getElementById('voiceBtn');
             
             if (!isRecording) {
-                // Démarrer l'enregistrement
                 isRecording = true;
                 voiceBtn.classList.add('recording');
-                
-                // TODO: Implémenter Web Speech API
                 alert('🎤 Fonction vocale en cours de développement\n\nProchainement : enregistrement vocal et transcription automatique !');
                 
-                // Simuler l'arrêt après 3 secondes
                 setTimeout(() => {
                     isRecording = false;
                     voiceBtn.classList.remove('recording');
                 }, 3000);
                 
             } else {
-                // Arrêter l'enregistrement
                 isRecording = false;
                 voiceBtn.classList.remove('recording');
             }
@@ -1247,7 +1379,6 @@ Que puis-je faire pour toi aujourd'hui ?`);
                 
                 addMessage('user', `📎 Fichier joint : **${fileName}** (${fileSize} KB)`);
                 
-                // TODO: Implémenter l'analyse de fichier
                 setTimeout(() => {
                     addMessage('assistant', `J'ai bien reçu le fichier **${fileName}**. 📄\n\nL'analyse de documents sera bientôt disponible. Cette fonctionnalité permettra de :\n\n✅ Extraire le texte des PDF\n✅ Analyser le contenu\n✅ Répondre à des questions sur le document\n✅ Résumer les informations clés`);
                 }, 1000);
@@ -1264,7 +1395,6 @@ Que puis-je faire pour toi aujourd'hui ?`);
                 
                 addMessage('user', `🖼️ Image jointe : **${fileName}**`);
                 
-                // TODO: Implémenter l'analyse d'image
                 setTimeout(() => {
                     addMessage('assistant', `J'ai bien reçu l'image **${fileName}**. 🖼️\n\nL'analyse d'images sera bientôt disponible. Cette fonctionnalité permettra de :\n\n✅ Décrire le contenu de l'image\n✅ Extraire du texte (OCR)\n✅ Répondre à des questions sur l'image\n✅ Identifier des objets et des personnes`);
                 }, 1000);
@@ -1272,22 +1402,17 @@ Que puis-je faire pour toi aujourd'hui ?`);
         }
 
         // ============================================
-        // FERMETURE DE LA SIDEBAR EN MOBILE
+        // GESTION RESPONSIVE
         // ============================================
         window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
             if (window.innerWidth <= 768) {
-                // En mobile, la sidebar est fermée par défaut
-                if (!sidebar.classList.contains('closed')) {
-                    // Ne rien faire, laisser l'utilisateur contrôler
-                }
+                document.getElementById('sidebar').classList.add('closed');
             } else {
-                // En desktop, la sidebar est ouverte
-                sidebar.classList.remove('closed');
+                document.getElementById('sidebar').classList.remove('closed');
             }
         });
 
-        // Initialiser l'état de la sidebar selon la taille de l'écran
+        // Initialiser
         if (window.innerWidth <= 768) {
             document.getElementById('sidebar').classList.add('closed');
         }
