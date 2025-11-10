@@ -1,0 +1,62 @@
+# ============================================
+# JEDIDJA AI - .gitignore
+# ============================================
+
+# Variables d'environnement (IMPORTANT - Ne jamais commiter !)
+.env
+.env.local
+.env.production
+
+# Dépendances Node.js
+node_modules/
+package-lock.json
+yarn.lock
+
+# Netlify
+.netlify/
+.netlify.toml.backup
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers temporaires
+*.tmp
+*.temp
+.cache/
+
+# Build
+dist/
+build/
+
+# Tests
+coverage/
+.nyc_output/
+
+# Sauvegardes
+*.bak
+*.backup
+
+# Fichiers sensibles
+secrets/
+private/
+*.key
+*.pem
+
+# Documentation temporaire
+docs/.build/
