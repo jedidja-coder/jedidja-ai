@@ -1129,7 +1129,7 @@ Les réponses fournies ne correspondent pas. Réessaye :
                 removeTypingIndicator();
 
                 if (data.error) {
-                    addMessage('assistant', `❌ **Erreur** : ${data.error}\n\nVérifie que ta clé API Grok est correctement configurée dans les variables d'environnement Netlify.`);
+                    addMessage('assistant', `❌ **Erreur** : ${data.error}\n\nVérifie que ta clé API Groq est correctement configurée dans les variables d'environnement Netlify.`);
                 } else {
                     addMessage('assistant', data.response);
                 }
