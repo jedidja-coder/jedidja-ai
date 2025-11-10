@@ -1,0 +1,26 @@
+{
+  "name": "jedidja-ai",
+  "version": "2.0.0",
+  "description": "Jedidja - Assistant IA de nouvelle génération créé par Jédidja SROVI",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Aucune étape de build nécessaire'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "ai",
+    "assistant",
+    "grok",
+    "chatbot",
+    "jedidja"
+  ],
+  "author": "Jédidja SROVI",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "netlify-cli": "^15.0.0"
+  }
+}
