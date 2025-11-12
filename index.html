@@ -1426,17 +1426,15 @@
         // ============================================
         // MASQUER L'ÉCRAN DE CHARGEMENT
         // ============================================
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('appContainer').style.opacity = '1';
-            }, 2500);
-        });
+        setTimeout(function() {
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.getElementById('appContainer').style.opacity = '1';
+        }, 2500);
 
         // ============================================
         // INITIALISATION
         // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
             addMessage('assistant', `Bonjour ! Je suis **Jedidja**, ton assistant IA de nouvelle génération. 🚀
 
 Voici ce que je peux faire pour toi :
@@ -1452,7 +1450,7 @@ Clique sur une suggestion ci-dessous ou tape ta question ! 😊`);
 
             showSuggestions();
             updateStats();
-        });
+        }, 2600);
 
         // ============================================
         // GESTION DES SECTIONS
