@@ -22,34 +22,6 @@
             color: white;
             overflow: hidden;
             height: 100vh;
-            transition: background 0.5s ease;
-        }
-
-        /* ============================================ */
-        /* THÈMES */
-        /* ============================================ */
-        body.theme-dark {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-        }
-
-        body.theme-blue {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%);
-        }
-
-        body.theme-purple {
-            background: linear-gradient(135deg, #1e1b4b 0%, #5b21b6 50%, #1e1b4b 100%);
-        }
-
-        body.theme-green {
-            background: linear-gradient(135deg, #022c22 0%, #065f46 50%, #022c22 100%);
-        }
-
-        body.theme-red {
-            background: linear-gradient(135deg, #450a0a 0%, #991b1b 50%, #450a0a 100%);
-        }
-
-        body.theme-ocean {
-            background: linear-gradient(135deg, #164e63 0%, #0e7490 50%, #164e63 100%);
         }
 
         /* ============================================ */
@@ -328,7 +300,6 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s;
-            border: none;
         }
 
         .new-chat-btn:hover {
@@ -375,27 +346,21 @@
 
         .theme-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-top: 8px;
         }
 
         .theme-btn {
-            height: 40px;
+            height: 32px;
             border-radius: 8px;
             border: 2px solid transparent;
             cursor: pointer;
             transition: all 0.2s;
-            position: relative;
         }
 
         .theme-btn:hover {
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: scale(1.05);
-        }
-
-        .theme-btn.active {
-            border-color: white;
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .theme-dark {
@@ -404,22 +369,6 @@
 
         .theme-blue {
             background: linear-gradient(135deg, #2563eb, #7c3aed);
-        }
-
-        .theme-purple {
-            background: linear-gradient(135deg, #7c3aed, #a855f7);
-        }
-
-        .theme-green {
-            background: linear-gradient(135deg, #059669, #10b981);
-        }
-
-        .theme-red {
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-        }
-
-        .theme-ocean {
-            background: linear-gradient(135deg, #0891b2, #06b6d4);
         }
 
         /* ============================================ */
@@ -515,18 +464,6 @@
             gap: 24px;
         }
 
-        /* Section cachée par défaut */
-        .section-content {
-            display: none;
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .section-content.active {
-            display: block;
-        }
-
         .message {
             display: flex;
             gap: 16px;
@@ -592,25 +529,6 @@
             font-size: 11px;
             color: #9ca3af;
             margin-top: 8px;
-        }
-
-        /* Animation typewriter */
-        .typing-text {
-            display: inline;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1em;
-            background: #60a5fa;
-            margin-left: 2px;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
         }
 
         /* Animation de l'IA qui réfléchit */
@@ -719,217 +637,6 @@
                 transform: scale(1.3) translateY(-8px);
                 opacity: 1;
             }
-        }
-
-        /* ============================================ */
-        /* SECTIONS : NOTES, RAPPELS, STATISTIQUES */
-        /* ============================================ */
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .add-btn {
-            padding: 10px 20px;
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .add-btn:hover {
-            background: rgba(59, 130, 246, 0.3);
-        }
-
-        .note-card, .reminder-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            transition: all 0.3s;
-        }
-
-        .note-card:hover, .reminder-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-        }
-
-        .note-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #60a5fa;
-        }
-
-        .note-content {
-            color: #d1d5db;
-            line-height: 1.6;
-        }
-
-        .note-date {
-            font-size: 12px;
-            color: #9ca3af;
-            margin-top: 12px;
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .stat-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .stat-value {
-            font-size: 36px;
-            font-weight: 700;
-            color: #60a5fa;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #9ca3af;
-        }
-
-        /* Modal paramètres */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .modal-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #60a5fa;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .setting-item {
-            margin-bottom: 20px;
-        }
-
-        .setting-label {
-            font-size: 14px;
-            color: #9ca3af;
-            margin-bottom: 8px;
-        }
-
-        .setting-input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .setting-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 13px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .toggle-switch.active {
-            background: #3b82f6;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: all 0.3s;
-        }
-
-        .toggle-switch.active .toggle-slider {
-            left: 27px;
         }
 
         /* ============================================ */
@@ -1114,18 +821,10 @@
             .suggestions-grid {
                 grid-template-columns: 1fr;
             }
-
-            .theme-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .stat-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
-<body class="theme-blue">
+<body>
     <!-- ============================================ -->
     <!-- ÉCRAN DE CHARGEMENT -->
     <!-- ============================================ -->
@@ -1143,82 +842,6 @@
         
         <div class="splash-progress">
             <div class="splash-progress-fill"></div>
-        </div>
-    </div>
-
-    <!-- ============================================ -->
-    <!-- MODAL PARAMÈTRES -->
-    <!-- ============================================ -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">⚙️ Paramètres</div>
-                <button class="close-btn" onclick="closeSettings()">✕</button>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-label">Nom d'utilisateur</div>
-                <input type="text" class="setting-input" placeholder="Votre nom" id="userName">
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-toggle">
-                    <div class="setting-label">Activer les sons</div>
-                    <div class="toggle-switch" id="soundToggle" onclick="toggleSound()">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-toggle">
-                    <div class="setting-label">Mode sombre automatique</div>
-                    <div class="toggle-switch" id="autoDarkToggle" onclick="toggleAutoDark()">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-toggle">
-                    <div class="setting-label">Effet de frappe (typewriter)</div>
-                    <div class="toggle-switch active" id="typewriterToggle" onclick="toggleTypewriter()">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-label">Vitesse de frappe</div>
-                <input type="range" min="10" max="100" value="30" class="setting-input" id="typingSpeed">
-            </div>
-        </div>
-    </div>
-
-    <!-- ============================================ -->
-    <!-- MODAL MODE VOIX -->
-    <!-- ============================================ -->
-    <div id="voiceModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">🎙️ Mode Voix</div>
-                <button class="close-btn" onclick="closeVoiceModal()">✕</button>
-            </div>
-            
-            <div style="text-align: center; padding: 40px 0;">
-                <div class="ai-thinking-logo" style="width: 100px; height: 100px; margin: 0 auto 24px;">
-                    <div class="thinking-outer"></div>
-                    <div class="thinking-middle"></div>
-                    <div class="thinking-inner"></div>
-                </div>
-                
-                <h3 style="margin-bottom: 16px;">Appuyez pour parler</h3>
-                <p style="color: #9ca3af; margin-bottom: 24px;">La reconnaissance vocale sera bientôt disponible</p>
-                
-                <button class="add-btn" onclick="startVoiceRecording()" id="voiceRecordBtn">
-                    🎤 Commencer l'enregistrement
-                </button>
-            </div>
         </div>
     </div>
 
@@ -1245,21 +868,17 @@
 
             <div class="nav-section">
                 <div class="nav-label">NAVIGATION</div>
-                <div class="nav-item active" onclick="switchSection('chat')">💬 Chat</div>
-                <div class="nav-item" onclick="switchSection('notes')">📝 Notes</div>
-                <div class="nav-item" onclick="switchSection('reminders')">🔔 Rappels</div>
-                <div class="nav-item" onclick="switchSection('stats')">📊 Statistiques</div>
+                <div class="nav-item active">💬 Chat</div>
+                <div class="nav-item">📝 Notes</div>
+                <div class="nav-item">🔔 Rappels</div>
+                <div class="nav-item">📊 Statistiques</div>
             </div>
 
             <div class="themes-section">
                 <div class="nav-label">THÈMES</div>
                 <div class="theme-grid">
-                    <button class="theme-btn theme-dark" onclick="changeTheme('dark')" title="Sombre"></button>
-                    <button class="theme-btn theme-blue active" onclick="changeTheme('blue')" title="Bleu"></button>
-                    <button class="theme-btn theme-purple" onclick="changeTheme('purple')" title="Violet"></button>
-                    <button class="theme-btn theme-green" onclick="changeTheme('green')" title="Vert"></button>
-                    <button class="theme-btn theme-red" onclick="changeTheme('red')" title="Rouge"></button>
-                    <button class="theme-btn theme-ocean" onclick="changeTheme('ocean')" title="Océan"></button>
+                    <button class="theme-btn theme-dark" onclick="changeTheme('dark')"></button>
+                    <button class="theme-btn theme-blue" onclick="changeTheme('blue')"></button>
                 </div>
             </div>
         </aside>
@@ -1282,82 +901,18 @@
                     </div>
                 </div>
                 <div class="header-right">
-                    <button class="icon-btn" onclick="openVoiceModal()">🔊 Voix</button>
-                    <button class="icon-btn" onclick="openSettings()">⚙️</button>
+                    <button class="icon-btn">🔊 Voix</button>
+                    <button class="icon-btn">⚙️</button>
                 </div>
             </header>
 
-            <!-- ZONE DE MESSAGES / SECTIONS -->
+            <!-- ZONE DE MESSAGES -->
             <div class="messages-container" id="messagesContainer">
-                
-                <!-- SECTION CHAT -->
-                <div id="chatSection" class="section-content active">
-                    <!-- Les messages seront ajoutés ici -->
-                </div>
-
-                <!-- SECTION NOTES -->
-                <div id="notesSection" class="section-content">
-                    <div class="section-header">
-                        <div class="section-title">📝 Mes Notes</div>
-                        <button class="add-btn" onclick="addNote()">+ Nouvelle note</button>
-                    </div>
-                    <div id="notesList">
-                        <div class="note-card">
-                            <div class="note-title">Bienvenue dans les notes</div>
-                            <div class="note-content">Ici tu peux sauvegarder tes idées, tes pensées et tout ce qui te passe par la tête ! Clique sur "Nouvelle note" pour commencer.</div>
-                            <div class="note-date">12 novembre 2025</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECTION RAPPELS -->
-                <div id="remindersSection" class="section-content">
-                    <div class="section-header">
-                        <div class="section-title">🔔 Mes Rappels</div>
-                        <button class="add-btn" onclick="addReminder()">+ Nouveau rappel</button>
-                    </div>
-                    <div id="remindersList">
-                        <div class="reminder-card">
-                            <div class="note-title">🎯 Exemple de rappel</div>
-                            <div class="note-content">N'oublie pas de déployer Jedidja sur Netlify !</div>
-                            <div class="note-date">📅 Aujourd'hui - 18:00</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECTION STATISTIQUES -->
-                <div id="statsSection" class="section-content">
-                    <div class="section-header">
-                        <div class="section-title">📊 Statistiques</div>
-                    </div>
-                    <div class="stat-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">💬</div>
-                            <div class="stat-value" id="totalMessages">0</div>
-                            <div class="stat-label">Messages envoyés</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">⏱️</div>
-                            <div class="stat-value" id="totalTime">0h</div>
-                            <div class="stat-label">Temps d'utilisation</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">📝</div>
-                            <div class="stat-value" id="totalNotes">1</div>
-                            <div class="stat-label">Notes créées</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">🔔</div>
-                            <div class="stat-value" id="totalReminders">1</div>
-                            <div class="stat-label">Rappels actifs</div>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- Les messages seront ajoutés ici par JavaScript -->
             </div>
 
             <!-- ZONE DE SAISIE -->
-            <div class="input-container" id="inputContainer">
+            <div class="input-container">
                 <div class="input-wrapper">
                     <div class="input-box">
                         <div class="input-actions">
@@ -1402,11 +957,6 @@
         let messages = [];
         let isLoading = false;
         let isRecording = false;
-        let currentSection = 'chat';
-        let typewriterEnabled = true;
-        let typingSpeed = 30;
-        let messageCount = 0;
-        let startTime = Date.now();
 
         // ============================================
         // INFORMATIONS DU CRÉATEUR (SÉCURITÉ)
@@ -1426,15 +976,17 @@
         // ============================================
         // MASQUER L'ÉCRAN DE CHARGEMENT
         // ============================================
-        setTimeout(function() {
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('appContainer').style.opacity = '1';
-        }, 2500);
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('appContainer').style.opacity = '1';
+            }, 2500);
+        });
 
         // ============================================
         // INITIALISATION
         // ============================================
-        setTimeout(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             addMessage('assistant', `Bonjour ! Je suis **Jedidja**, ton assistant IA de nouvelle génération. 🚀
 
 Voici ce que je peux faire pour toi :
@@ -1449,137 +1001,7 @@ Voici ce que je peux faire pour toi :
 Clique sur une suggestion ci-dessous ou tape ta question ! 😊`);
 
             showSuggestions();
-            updateStats();
-        }, 2600);
-
-        // ============================================
-        // GESTION DES SECTIONS
-        // ============================================
-        function switchSection(section) {
-            currentSection = section;
-            
-            // Masquer toutes les sections
-            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            // Afficher la section demandée
-            document.getElementById(section + 'Section').classList.add('active');
-            event.target.classList.add('active');
-            
-            // Masquer/afficher la zone de saisie
-            if (section === 'chat') {
-                document.getElementById('inputContainer').style.display = 'block';
-            } else {
-                document.getElementById('inputContainer').style.display = 'none';
-            }
-        }
-
-        // ============================================
-        // GESTION DES THÈMES
-        // ============================================
-        function changeTheme(theme) {
-            const body = document.body;
-            body.className = 'theme-' + theme;
-            
-            // Mettre à jour les boutons actifs
-            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // ============================================
-        // MODALS
-        // ============================================
-        function openSettings() {
-            document.getElementById('settingsModal').classList.add('active');
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.remove('active');
-        }
-
-        function openVoiceModal() {
-            document.getElementById('voiceModal').classList.add('active');
-        }
-
-        function closeVoiceModal() {
-            document.getElementById('voiceModal').classList.remove('active');
-        }
-
-        // ============================================
-        // PARAMÈTRES
-        // ============================================
-        function toggleSound() {
-            const toggle = document.getElementById('soundToggle');
-            toggle.classList.toggle('active');
-        }
-
-        function toggleAutoDark() {
-            const toggle = document.getElementById('autoDarkToggle');
-            toggle.classList.toggle('active');
-        }
-
-        function toggleTypewriter() {
-            const toggle = document.getElementById('typewriterToggle');
-            toggle.classList.toggle('active');
-            typewriterEnabled = toggle.classList.contains('active');
-        }
-
-        // ============================================
-        // NOTES
-        // ============================================
-        function addNote() {
-            const title = prompt('Titre de la note :');
-            if (!title) return;
-            
-            const content = prompt('Contenu de la note :');
-            if (!content) return;
-            
-            const noteHTML = `
-                <div class="note-card">
-                    <div class="note-title">${title}</div>
-                    <div class="note-content">${content}</div>
-                    <div class="note-date">${new Date().toLocaleDateString('fr-FR')}</div>
-                </div>
-            `;
-            
-            document.getElementById('notesList').insertAdjacentHTML('afterbegin', noteHTML);
-            updateStats();
-        }
-
-        // ============================================
-        // RAPPELS
-        // ============================================
-        function addReminder() {
-            const title = prompt('Titre du rappel :');
-            if (!title) return;
-            
-            const time = prompt('Heure (format HH:MM) :');
-            if (!time) return;
-            
-            const reminderHTML = `
-                <div class="reminder-card">
-                    <div class="note-title">🎯 ${title}</div>
-                    <div class="note-content">Rappel programmé</div>
-                    <div class="note-date">📅 Aujourd'hui - ${time}</div>
-                </div>
-            `;
-            
-            document.getElementById('remindersList').insertAdjacentHTML('afterbegin', reminderHTML);
-            updateStats();
-        }
-
-        // ============================================
-        // STATISTIQUES
-        // ============================================
-        function updateStats() {
-            document.getElementById('totalMessages').textContent = messageCount;
-            
-            const hours = Math.floor((Date.now() - startTime) / 3600000);
-            document.getElementById('totalTime').textContent = hours + 'h';
-            
-            document.getElementById('totalNotes').textContent = document.querySelectorAll('#notesList .note-card').length;
-            document.getElementById('totalReminders').textContent = document.querySelectorAll('#remindersList .reminder-card').length;
-        }
+        });
 
         // ============================================
         // AFFICHER LES SUGGESTIONS DE DÉMARRAGE
@@ -1605,7 +1027,7 @@ Clique sur une suggestion ci-dessous ou tape ta question ! 😊`);
                     </div>
                 </div>
             `;
-            document.getElementById('chatSection').insertAdjacentHTML('beforeend', suggestionsHTML);
+            document.getElementById('messagesContainer').insertAdjacentHTML('beforeend', suggestionsHTML);
         }
 
         function useSuggestion(text) {
@@ -1619,6 +1041,7 @@ Clique sur une suggestion ci-dessous ou tape ta question ! 😊`);
         function checkIdentity(message) {
             const lowerMsg = message.toLowerCase();
 
+            // Vérifier si c'est une question sur le créateur
             const creatorKeywords = ['créateur', 'createur', 'qui t\'a créé', 'qui t\'a crée', 'qui ta créé', 'qui ta crée', 'ton créateur', 'ton createur', 'qui t\'a fait', 'qui t\'a conçu'];
             const isCreatorQuestion = creatorKeywords.some(keyword => lowerMsg.includes(keyword));
 
@@ -1638,6 +1061,7 @@ Réponds aux deux questions dans ton prochain message pour continuer.`
                 };
             }
 
+            // Si on attend la vérification
             if (awaitingVerification) {
                 const hasQ1 = lowerMsg.includes('georges hotz') && lowerMsg.includes('elon musk');
                 const hasQ2 = lowerMsg.includes('eirelva');
@@ -1690,9 +1114,10 @@ Les réponses fournies ne correspondent pas. Réessaye :
         // ============================================
         // AJOUTER UN MESSAGE
         // ============================================
-        function addMessage(role, content, useTypewriter = false) {
-            const container = document.getElementById('chatSection');
+        function addMessage(role, content) {
+            const container = document.getElementById('messagesContainer');
             
+            // Supprimer les suggestions si présentes
             const suggestions = container.querySelector('.suggestions-grid');
             if (suggestions) {
                 suggestions.remove();
@@ -1712,17 +1137,10 @@ Les réponses fournies ne correspondent pas. Réessaye :
                         </div>
                     </div>
                     <div class="message-content">
-                        <div class="message-text" id="msg-${Date.now()}"></div>
+                        <div class="message-text">${formatMessage(content)}</div>
                         <div class="message-time">${timeStr}</div>
                     </div>
                 `;
-                container.appendChild(messageDiv);
-                
-                if (useTypewriter && typewriterEnabled) {
-                    typewriterEffect(content, `msg-${Date.now()}`);
-                } else {
-                    document.getElementById(`msg-${Date.now()}`).innerHTML = formatMessage(content);
-                }
             } else {
                 messageDiv.innerHTML = `
                     <div class="message-avatar user">U</div>
@@ -1731,45 +1149,12 @@ Les réponses fournies ne correspondent pas. Réessaye :
                         <div class="message-time">${timeStr}</div>
                     </div>
                 `;
-                container.appendChild(messageDiv);
             }
 
+            container.appendChild(messageDiv);
             messages.push({ role, content, timestamp: now });
-            messageCount++;
-            updateStats();
             
             container.scrollTop = container.scrollHeight;
-        }
-
-        // ============================================
-        // EFFET TYPEWRITER (ÉCRITURE PROGRESSIVE)
-        // ============================================
-        function typewriterEffect(text, elementId) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            
-            let index = 0;
-            const formattedText = formatMessage(text);
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = formattedText;
-            const plainText = tempDiv.textContent || tempDiv.innerText;
-            
-            element.innerHTML = '<span class="cursor"></span>';
-            const textSpan = document.createElement('span');
-            textSpan.className = 'typing-text';
-            element.insertBefore(textSpan, element.firstChild);
-            
-            function type() {
-                if (index < plainText.length) {
-                    textSpan.textContent += plainText.charAt(index);
-                    index++;
-                    setTimeout(type, typingSpeed);
-                } else {
-                    element.innerHTML = formattedText;
-                }
-            }
-            
-            type();
         }
 
         // ============================================
@@ -1780,4 +1165,257 @@ Les réponses fournies ne correspondent pas. Réessaye :
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br>')
                 .replace(/^# (.*?)$/gm, '<h2 style="font-size: 1.5em; margin: 12px 0;">$1</h2>')
-                .replace(/^## (.*?)$/gm, '<h3
+                .replace(/^## (.*?)$/gm, '<h3 style="font-size: 1.2em; margin: 10px 0;">$1</h3>')
+                .replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">$1</code>');
+        }
+
+        // ============================================
+        // AFFICHER L'INDICATEUR DE RÉFLEXION
+        // ============================================
+        function showThinkingIndicator() {
+            const container = document.getElementById('messagesContainer');
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'message';
+            thinkingDiv.id = 'thinkingIndicator';
+            thinkingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <div class="logo" style="width: 40px; height: 40px;">
+                        <div class="logo-circle"></div>
+                    </div>
+                </div>
+                <div class="message-content">
+                    <div class="ai-thinking-container">
+                        <div class="ai-thinking-logo">
+                            <div class="thinking-outer"></div>
+                            <div class="thinking-middle"></div>
+                            <div class="thinking-inner"></div>
+                        </div>
+                        <span style="color: #9ca3af;">Jedidja réfléchit...</span>
+                        <div class="thinking-dots">
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(thinkingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeThinkingIndicator() {
+            const indicator = document.getElementById('thinkingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        // ============================================
+        // ENVOYER UN MESSAGE AVEC GROQ API
+        // ============================================
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message || isLoading) return;
+
+            // Ajouter le message utilisateur
+            addMessage('user', message);
+            input.value = '';
+            input.style.height = 'auto';
+
+            // Désactiver le bouton d'envoi
+            isLoading = true;
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('mainLogo').classList.add('loading');
+
+            // Afficher l'indicateur de réflexion
+            showThinkingIndicator();
+
+            // Vérifier l'identité si nécessaire
+            const identityCheck = checkIdentity(message);
+            if (identityCheck) {
+                removeThinkingIndicator();
+                await new Promise(resolve => setTimeout(resolve, 800));
+                addMessage('assistant', identityCheck.response);
+                isLoading = false;
+                document.getElementById('sendBtn').disabled = false;
+                document.getElementById('mainLogo').classList.remove('loading');
+                return;
+            }
+
+            try {
+                // ============================================
+                // APPEL À LA FONCTION NETLIFY (GROQ API)
+                // ============================================
+                const response = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: messages.map(m => ({
+                            role: m.role,
+                            content: m.content
+                        }))
+                    })
+                });
+
+                const data = await response.json();
+
+                removeThinkingIndicator();
+
+                if (data.error) {
+                    addMessage('assistant', `❌ **Erreur** : ${data.error}\n\nVérifie que ta clé API Groq est correctement configurée dans les variables d'environnement Netlify.`);
+                } else {
+                    addMessage('assistant', data.response);
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                removeThinkingIndicator();
+                addMessage('assistant', `❌ **Erreur de connexion**\n\nJe n'arrive pas à me connecter à l'API. Vérifie :\n- Que la fonction Netlify est bien déployée\n- Que ta clé API Groq est configurée\n- Ta connexion Internet\n\n**Note :** En développement local, utilise \`netlify dev\` pour tester les fonctions.`);
+            }
+
+            // Réactiver le bouton
+            isLoading = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('mainLogo').classList.remove('loading');
+        }
+
+        // ============================================
+        // GESTION DES TOUCHES
+        // ============================================
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // ============================================
+        // AUTO-RESIZE DU TEXTAREA
+        // ============================================
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+        }
+
+        // ============================================
+        // TOGGLE SIDEBAR (MOBILE)
+        // ============================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+        }
+
+        // ============================================
+        // NOUVELLE CONVERSATION
+        // ============================================
+        function startNewChat() {
+            messages = [];
+            document.getElementById('messagesContainer').innerHTML = '';
+            awaitingVerification = false;
+            verificationAttempts = 0;
+            
+            addMessage('assistant', `Bonjour ! Je suis **Jedidja**, ton assistant IA de nouvelle génération. 🚀
+
+Voici ce que je peux faire pour toi :
+
+💬 Converser naturellement sur n'importe quel sujet
+💻 T'aider avec la programmation (tous langages)
+🎨 Créer du contenu (articles, histoires, poèmes...)
+🎓 T'enseigner de nouveaux concepts
+🌐 Rechercher des informations sur le web
+📄 Analyser des documents
+
+Que puis-je faire pour toi aujourd'hui ?`);
+
+            showSuggestions();
+        }
+
+        // ============================================
+        // CHANGER LE THÈME
+        // ============================================
+        function changeTheme(theme) {
+            const body = document.body;
+            if (theme === 'dark') {
+                body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)';
+            } else if (theme === 'blue') {
+                body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%)';
+            }
+        }
+
+        // ============================================
+        // ENREGISTREMENT VOCAL (À IMPLÉMENTER)
+        // ============================================
+        function toggleVoiceRecording() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            
+            if (!isRecording) {
+                isRecording = true;
+                voiceBtn.classList.add('recording');
+                alert('🎤 Fonction vocale en cours de développement\n\nProchainement : enregistrement vocal et transcription automatique !');
+                
+                setTimeout(() => {
+                    isRecording = false;
+                    voiceBtn.classList.remove('recording');
+                }, 3000);
+                
+            } else {
+                isRecording = false;
+                voiceBtn.classList.remove('recording');
+            }
+        }
+
+        // ============================================
+        // UPLOAD DE FICHIER
+        // ============================================
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / 1024).toFixed(2);
+                
+                addMessage('user', `📎 Fichier joint : **${fileName}** (${fileSize} KB)`);
+                
+                setTimeout(() => {
+                    addMessage('assistant', `J'ai bien reçu le fichier **${fileName}**. 📄\n\nL'analyse de documents sera bientôt disponible. Cette fonctionnalité permettra de :\n\n✅ Extraire le texte des PDF\n✅ Analyser le contenu\n✅ Répondre à des questions sur le document\n✅ Résumer les informations clés`);
+                }, 1000);
+            }
+        }
+
+        // ============================================
+        // UPLOAD D'IMAGE
+        // ============================================
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileName = file.name;
+                
+                addMessage('user', `🖼️ Image jointe : **${fileName}**`);
+                
+                setTimeout(() => {
+                    addMessage('assistant', `J'ai bien reçu l'image **${fileName}**. 🖼️\n\nL'analyse d'images sera bientôt disponible. Cette fonctionnalité permettra de :\n\n✅ Décrire le contenu de l'image\n✅ Extraire du texte (OCR)\n✅ Répondre à des questions sur l'image\n✅ Identifier des objets et des personnes`);
+                }, 1000);
+            }
+        }
+
+        // ============================================
+        // GESTION RESPONSIVE
+        // ============================================
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.add('closed');
+            } else {
+                document.getElementById('sidebar').classList.remove('closed');
+            }
+        });
+
+        // Initialiser
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.add('closed');
+        }
+    </script>
+</body>
+</html>
