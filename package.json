@@ -1,28 +1,21 @@
 {
   "name": "jedidja-ai",
   "version": "2.0.0",
-  "description": "Jedidja - Assistant IA de nouvelle génération propulsé par Groq (Llama 3.3 70B)",
+  "description": "Jedidja - Assistant IA de nouvelle génération",
   "main": "index.html",
   "scripts": {
     "dev": "netlify dev",
-    "build": "echo 'Aucune étape de build nécessaire - Site HTML statique'",
-    "deploy": "netlify deploy --prod",
-    "test": "echo 'Tests à venir'"
+    "build": "echo 'Build complete'",
+    "deploy": "netlify deploy --prod"
   },
   "keywords": [
     "ai",
     "assistant",
-    "groq",
-    "llama",
     "chatbot",
-    "jedidja",
-    "netlify",
-    "serverless"
+    "groq",
+    "llama"
   ],
-  "author": {
-    "name": "Jédidja SROVI",
-    "description": "Développeur autodidacte passionné de tech et étudiant en psychologie"
-  },
+  "author": "Jédidja SROVI",
   "license": "MIT",
   "dependencies": {
     "node-fetch": "^2.6.7"
@@ -32,13 +25,5 @@
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/votre-username/jedidja-ai.git"
-  },
-  "bugs": {
-    "url": "https://github.com/votre-username/jedidja-ai/issues"
-  },
-  "homepage": "https://github.com/votre-username/jedidja-ai#readme"
+  }
 }
