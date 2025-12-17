@@ -1,199 +1,73 @@
-# ============================================
-# CONFIGURATION NETLIFY POUR JEDIDJA 2.0
-# ============================================
+# Configuration Netlify pour Jedidja AI
 
 [build]
-  # Pas de commande de build nécessaire (site HTML statique)
-  command = "echo 'Aucune étape de build - Site HTML statique'"
+  # Commande de build (aucune nécessaire pour un site statique simple)
+  command = "echo 'Build complete'"
   
-  # Dossier à publier (racine du projet)
+  # Dossier de publication (racine du projet)
   publish = "."
   
   # Dossier des fonctions serverless
   functions = "netlify/functions"
 
-# ============================================
-# PARAMÈTRES DU SITE
-# ============================================
-[build.environment]
-  # Version de Node.js à utiliser
-  NODE_VERSION = "18"
+# Configuration des fonctions
+[functions]
+  # Dossier contenant les fonctions
+  directory = "netlify/functions"
+  
+  # Inclure node_modules dans le déploiement
+  node_bundler = "esbuild"
 
-# ============================================
-# REDIRECTIONS ET RÈGLES
-# ============================================
+# Redirections et règles
+[[redirects]]
+  # Redirection pour gérer les appels API
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
-# Rediriger toutes les erreurs 404 vers index.html (SPA)
+# Headers de sécurité
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # CORS - Autoriser les requêtes cross-origin
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    
+    # Sécurité
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Cache
+    Cache-Control = "public, max-age=3600"
+
+# Configuration spécifique pour les fonctions
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Gestion des erreurs
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = false
 
-# ============================================
-# HEADERS DE SÉCURITÉ
-# ============================================
-[[headers]]
-  for = "/*"
-  [headers.values]
-    # Sécurité XSS
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
-    
-    # Référer policy
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    
-    # Permissions Policy
-    Permissions-Policy = "geolocation=(), microphone=(self), camera=()"
-    
-    # Content Security Policy (ajusté pour les scripts inline nécessaires)
-    Content-Security-Policy = "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; img-src 'self' https: data: blob:; font-src 'self' data:; style-src 'self' 'unsafe-inline';"
+# Variables d'environnement (à configurer dans le dashboard Netlify)
+# GROQ_API_KEY = "votre_clé_api_groq"
 
-# Headers spécifiques pour les fonctions Netlify
-[[headers]]
-  for = "/.netlify/functions/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
-    Access-Control-Max-Age = "86400"
-
-# Headers pour les fichiers statiques (cache)
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/images/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# ============================================
-# VARIABLES D'ENVIRONNEMENT (POUR RÉFÉRENCE)
-# ============================================
-# Ces variables doivent être configurées dans l'interface Netlify
-# Site Settings > Environment Variables
-#
-# GROQ_API_KEY = "gsk_votre_clé_api_groq"
-# NODE_ENV = "production"
-
-# ============================================
-# PARAMÈTRES DE DÉPLOIEMENT
-# ============================================
+# Configuration du déploiement
 [context.production]
-  # Production
-  environment = { NODE_ENV = "production" }
+  environment = { NODE_VERSION = "18" }
 
 [context.deploy-preview]
-  # Aperçu de déploiement (Pull Requests)
-  environment = { NODE_ENV = "development" }
+  environment = { NODE_VERSION = "18" }
 
 [context.branch-deploy]
-  # Déploiement de branches
-  environment = { NODE_ENV = "staging" }
+  environment = { NODE_VERSION = "18" }
 
-# ============================================
-# FONCTIONS SERVERLESS - CONFIGURATION
-# ============================================
-[functions]
-  # Dossier des fonctions
-  directory = "netlify/functions"
-  
-  # Runtime Node.js avec esbuild pour bundler
-  node_bundler = "esbuild"
-  
-  # Fichiers externes à inclure (si nécessaire)
-  # external_node_modules = ["node-fetch"]
-
-# Configuration globale pour toutes les fonctions
-[functions."*"]
-  # Timeout des fonctions (en secondes, max 26s pour le plan gratuit)
-  # Pour le plan Pro, jusqu'à 26 secondes
-  timeout = 10
-
-# Configuration spécifique pour la fonction chat
-[functions.chat]
-  # Timeout personnalisé pour la fonction chat
-  timeout = 15
-  
-  # Taille mémoire (en MB, par défaut 1024)
-  memory = 1024
-
-# ============================================
-# PLUGINS NETLIFY (OPTIONNEL)
-# ============================================
-# Décommenter pour activer des plugins
-
-# Plugin de cache pour accélérer les builds
-# [[plugins]]
-#   package = "@netlify/plugin-cache"
-
-# Plugin d'optimisation d'images
-# [[plugins]]
-#   package = "netlify-plugin-image-optim"
-
-# Plugin de minification HTML/CSS/JS
-# [[plugins]]
-#   package = "netlify-plugin-minify-html"
-
-# ============================================
-# SPLIT TESTING (OPTIONNEL)
-# ============================================
-# Pour tester différentes versions du site
-# [split_test]
-#   branch_deploy = ["main", "test-branch"]
-
-# ============================================
-# FORMULAIRES NETLIFY (SI NÉCESSAIRE)
-# ============================================
-# Si tu veux ajouter des formulaires de contact
-# [forms]
-#   # Activer la protection anti-spam
-#   spam_filter = true
-
-# ============================================
-# NOTIFICATIONS (OPTIONNEL)
-# ============================================
-# Pour être notifié des déploiements
-# [notifications]
-#   [notifications.email]
-#     to = ["ton-email@example.com"]
-#     on_success = true
-#     on_failure = true
-
-# ============================================
-# EDGE HANDLERS (AVANCÉ - OPTIONNEL)
-# ============================================
-# Pour du traitement côté edge
-# [[edge_handlers]]
-#   handler = "handler-name"
-#   path = "/api/*"
-
-# ============================================
-# NOTES IMPORTANTES
-# ============================================
-# 1. Ce fichier est détecté automatiquement par Netlify
-# 2. Les fonctions dans netlify/functions/ sont déployées automatiquement
-# 3. La variable GROQ_API_KEY doit être ajoutée manuellement dans Netlify UI
-# 4. Le site est accessible immédiatement après le déploiement
-# 5. Les changements dans ce fichier nécessitent un redéploiement
-
-# ============================================
-# COMMANDES UTILES
-# ============================================
-# Déployer en local : netlify dev
-# Déployer en production : netlify deploy --prod
-# Voir les logs : netlify logs:functions
-# Lister les fonctions : netlify functions:list
+# Plugin Netlify (optionnel)
+[[plugins]]
+  package = "@netlify/plugin-functions-core"
